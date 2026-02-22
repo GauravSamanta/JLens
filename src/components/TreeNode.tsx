@@ -15,11 +15,11 @@ interface TreeNodeProps {
 
 function valueColor(type: string, isDark: boolean): string {
   switch (type) {
-    case 'string': return isDark ? 'text-emerald-400' : 'text-emerald-600'
-    case 'number': return isDark ? 'text-blue-400' : 'text-blue-600'
-    case 'boolean': return isDark ? 'text-orange-400' : 'text-orange-600'
-    case 'null': return isDark ? 'text-gray-500 italic' : 'text-gray-400 italic'
-    default: return isDark ? 'text-gray-400' : 'text-gray-500'
+    case 'string': return isDark ? 'text-accent-green' : 'text-emerald-700'
+    case 'number': return isDark ? 'text-accent-blue' : 'text-blue-700'
+    case 'boolean': return isDark ? 'text-accent-peach' : 'text-orange-700'
+    case 'null': return isDark ? 'text-text-faint italic' : 'text-gray-400 italic'
+    default: return isDark ? 'text-text-secondary' : 'text-gray-500'
   }
 }
 
@@ -46,10 +46,10 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
   }, [node.id])
 
   let rowStyle: string
-  if (isActiveMatch) rowStyle = 'bg-yellow-900/40 ring-1 ring-yellow-500/30'
-  else if (isMatch) rowStyle = 'bg-yellow-900/20'
-  else if (isSelected) rowStyle = isDark ? 'bg-gray-800/60' : 'bg-blue-50'
-  else rowStyle = isDark ? 'hover:bg-gray-800/30' : 'hover:bg-gray-100'
+  if (isActiveMatch) rowStyle = isDark ? 'bg-accent-yellow/20 ring-1 ring-accent-yellow/30' : 'bg-yellow-100 ring-1 ring-yellow-300/50'
+  else if (isMatch) rowStyle = isDark ? 'bg-accent-yellow/10' : 'bg-yellow-50'
+  else if (isSelected) rowStyle = isDark ? 'bg-overlay/60' : 'bg-blue-50'
+  else rowStyle = isDark ? 'hover:bg-overlay/30' : 'hover:bg-gray-100'
 
   return (
     <div
@@ -64,7 +64,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
               e.stopPropagation()
               onToggle(node.id)
             }}
-            className={isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
+            className={isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}
           >
             {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
@@ -73,16 +73,16 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
       {node.key !== '$' && (
         <>
-          <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{node.key}</span>
-          <span className={`mx-1 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>:</span>
+          <span className={isDark ? 'text-text-primary' : 'text-gray-700'}>{node.key}</span>
+          <span className={`mx-1 ${isDark ? 'text-subtle' : 'text-gray-400'}`}>:</span>
         </>
       )}
 
       {isContainer ? (
         isExpanded ? (
-          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
+          <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
         ) : (
-          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>
+          <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>
             {node.type === 'array' ? `[${node.childCount} items]` : `{${node.childCount} keys}`}
           </span>
         )
@@ -92,7 +92,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
       <button
         onClick={handleCopy}
-        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
+        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
         title={`Copy path: ${node.id}`}
       >
         <Copy size={12} />

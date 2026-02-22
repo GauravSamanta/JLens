@@ -14,15 +14,15 @@ export function Toolbar() {
   const isDark = theme === 'dark'
 
   const btnClass = isDark
-    ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+    ? 'text-text-secondary hover:bg-overlay hover:text-text-primary'
     : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
 
   return (
-    <header className={`flex items-center justify-between border-b px-4 py-2 ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
+    <header className={`flex items-center justify-between border-b px-4 py-2 ${isDark ? 'border-border' : 'border-border-light'}`}>
       <div className="flex items-center gap-6">
         <h1 className="text-lg font-bold tracking-tight">
-          <span className="text-blue-400">J</span>
-          <span className={isDark ? 'text-gray-100' : 'text-gray-900'}>Lens</span>
+          <span className="text-accent-blue">J</span>
+          <span className={isDark ? 'text-text-primary' : 'text-text-light'}>Lens</span>
         </h1>
         <nav className="flex gap-1">
           {modes.map((m) => (
@@ -31,7 +31,7 @@ export function Toolbar() {
               onClick={() => setMode(m.id)}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 mode === m.id
-                  ? 'bg-blue-600 text-white'
+                  ? (isDark ? 'bg-accent-blue text-base' : 'bg-blue-600 text-white')
                   : btnClass
               }`}
             >

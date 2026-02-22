@@ -1,5 +1,36 @@
 @import "tailwindcss";
 
+@theme {
+  /* Dark theme - warm, easy on the eyes (Catppuccin Mocha inspired) */
+  --color-base: #1e1e2e;
+  --color-surface: #282839;
+  --color-mantle: #232334;
+  --color-overlay: #3b3b52;
+  --color-muted: #6c7086;
+  --color-subtle: #585b70;
+  --color-text-primary: #cdd6f4;
+  --color-text-secondary: #a6adc8;
+  --color-text-faint: #7f849c;
+  --color-border: #3b3b52;
+
+  /* Light theme - warm off-white */
+  --color-base-light: #f5f3ef;
+  --color-surface-light: #edeae4;
+  --color-text-light: #4c4f69;
+  --color-text-light-secondary: #6c6f85;
+  --color-border-light: #d4d0c8;
+
+  /* Accent colors (softer, pastel) */
+  --color-accent-blue: #89b4fa;
+  --color-accent-green: #a6e3a1;
+  --color-accent-red: #f38ba8;
+  --color-accent-yellow: #f9e2af;
+  --color-accent-peach: #fab387;
+  --color-accent-mauve: #cba6f7;
+  --color-accent-teal: #94e2d5;
+  --color-accent-sky: #89dcfe;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -15,14 +46,14 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: var(--color-overlay);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: var(--color-muted);
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(137, 180, 250, 0.3);
 }

@@ -51,8 +51,8 @@ function App() {
   return (
     <div className={`h-screen flex flex-col ${
       isDark
-        ? 'bg-gray-950 text-gray-100'
-        : 'bg-white text-gray-900'
+        ? 'bg-base text-text-primary'
+        : 'bg-base-light text-text-light'
     }`}>
       <Toolbar />
       {mode === 'explore' && (
@@ -60,7 +60,7 @@ function App() {
           <JsonInput />
           {isParsing ? (
             <main className="flex-1 flex items-center justify-center">
-              <p className={`font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className={`font-mono text-sm ${isDark ? 'text-text-secondary' : 'text-text-light-secondary'}`}>
                 Parsing large JSON...
               </p>
             </main>
@@ -74,7 +74,7 @@ function App() {
             </>
           ) : (
             <main className="flex-1 flex items-center justify-center">
-              <p className={`font-mono text-sm ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+              <p className={`font-mono text-sm ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
                 No JSON loaded.
               </p>
             </main>

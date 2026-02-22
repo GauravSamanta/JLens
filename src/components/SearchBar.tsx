@@ -30,8 +30,8 @@ export function SearchBar() {
   }
 
   return (
-    <div className={`flex items-center gap-2 border-t px-4 py-2 ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
-      <Search size={14} className={`flex-shrink-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+    <div className={`flex items-center gap-2 border-t px-4 py-2 ${isDark ? 'border-border' : 'border-border-light'}`}>
+      <Search size={14} className={`flex-shrink-0 ${isDark ? 'text-text-faint' : 'text-gray-400'}`} />
       <input
         type="text"
         value={query}
@@ -40,25 +40,25 @@ export function SearchBar() {
         placeholder="Search keys and values... (key: or value: prefix)"
         className={`flex-1 bg-transparent text-sm font-mono focus:outline-none ${
           isDark
-            ? 'text-gray-200 placeholder-gray-600'
+            ? 'text-text-primary placeholder-text-faint'
             : 'text-gray-800 placeholder-gray-400'
         }`}
         data-search-input
       />
       {query && (
         <>
-          <span className={`text-xs font-mono tabular-nums ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+          <span className={`text-xs font-mono tabular-nums ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
             {matchIds.length > 0
               ? `${activeMatchIndex + 1} of ${matchIds.length}`
               : 'No matches'}
           </span>
-          <button onClick={prevMatch} className={`${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`} title="Previous (Shift+Enter)">
+          <button onClick={prevMatch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Previous (Shift+Enter)">
             <ChevronUp size={14} />
           </button>
-          <button onClick={nextMatch} className={`${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`} title="Next (Enter)">
+          <button onClick={nextMatch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Next (Enter)">
             <ChevronDown size={14} />
           </button>
-          <button onClick={clearSearch} className={`${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`} title="Clear (Esc)">
+          <button onClick={clearSearch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Clear (Esc)">
             <X size={14} />
           </button>
         </>

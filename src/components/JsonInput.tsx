@@ -63,9 +63,9 @@ export function JsonInput() {
     }
   }, [parseResult, parseError])
 
-  const border = isDark ? 'border-gray-800' : 'border-gray-200'
+  const border = isDark ? 'border-border' : 'border-border-light'
   const btnClass = isDark
-    ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+    ? 'text-text-secondary hover:bg-overlay hover:text-text-primary'
     : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
 
   if (collapsed && parseResult) {
@@ -73,14 +73,14 @@ export function JsonInput() {
       <div className={`flex items-center gap-2 px-4 py-2 border-b ${border}`}>
         <button
           onClick={() => setCollapsed(false)}
-          className={`flex items-center gap-1 text-sm font-mono ${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`flex items-center gap-1 text-sm font-mono ${isDark ? 'text-text-secondary hover:text-text-primary' : 'text-gray-500 hover:text-gray-700'}`}
         >
           <ChevronRight size={14} />
           JSON loaded ({parseResult.totalNodes} nodes, depth {parseResult.maxDepth})
         </button>
         <button
           onClick={handleClear}
-          className={`text-sm ml-auto ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`text-sm ml-auto ${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Clear
         </button>
@@ -94,12 +94,12 @@ export function JsonInput() {
         {parseResult && (
           <button
             onClick={() => setCollapsed(true)}
-            className={isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}
+            className={isDark ? 'text-text-secondary hover:text-text-primary' : 'text-gray-500 hover:text-gray-700'}
           >
             <ChevronDown size={14} />
           </button>
         )}
-        <span className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>INPUT</span>
+        <span className={`text-xs font-mono ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>INPUT</span>
         <div className="flex items-center gap-1 ml-auto">
           <button
             onClick={handleFormat}
@@ -145,13 +145,13 @@ export function JsonInput() {
         placeholder="Paste JSON here..."
         className={`w-full h-40 resize-y rounded border p-3 font-mono text-sm focus:outline-none ${
           isDark
-            ? 'bg-gray-900 border-gray-800 text-gray-200 placeholder-gray-600 focus:border-gray-600'
+            ? 'bg-surface border-border text-text-primary placeholder-text-faint focus:border-overlay'
             : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400 focus:border-gray-400'
         }`}
         spellCheck={false}
       />
       {parseError && (
-        <p className="mt-1 text-xs text-red-400 font-mono">{parseError}</p>
+        <p className="mt-1 text-xs text-accent-red font-mono">{parseError}</p>
       )}
     </div>
   )

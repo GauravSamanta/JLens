@@ -40,15 +40,15 @@ export function TableView({ data, onClose }: TableViewProps) {
     }
   }
 
-  const border = isDark ? 'border-gray-800' : 'border-gray-200'
+  const border = isDark ? 'border-border' : 'border-border-light'
 
   return (
     <div className="flex flex-col h-full">
       <div className={`flex items-center justify-between px-3 py-2 border-b ${border}`}>
-        <span className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+        <span className={`text-xs font-mono ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
           TABLE VIEW ({data.length} rows, {columns.length} columns)
         </span>
-        <button onClick={onClose} className={isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}>
+        <button onClick={onClose} className={isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}>
           <X size={14} />
         </button>
       </div>
@@ -61,7 +61,7 @@ export function TableView({ data, onClose }: TableViewProps) {
                   key={col}
                   onClick={() => handleSort(col)}
                   className={`text-left px-3 py-2 cursor-pointer select-none whitespace-nowrap ${
-                    isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'
+                    isDark ? 'text-text-secondary hover:text-text-primary' : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <span className="flex items-center gap-1">
@@ -74,13 +74,13 @@ export function TableView({ data, onClose }: TableViewProps) {
           </thead>
           <tbody>
             {sortedData.map((row, i) => (
-              <tr key={i} className={`border-b ${isDark ? 'border-gray-900 hover:bg-gray-800/30' : 'border-gray-100 hover:bg-gray-50'}`}>
+              <tr key={i} className={`border-b ${isDark ? 'border-border hover:bg-overlay/30' : 'border-gray-100 hover:bg-gray-50'}`}>
                 {columns.map((col) => (
-                  <td key={col} className={`px-3 py-1.5 whitespace-nowrap max-w-xs truncate ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td key={col} className={`px-3 py-1.5 whitespace-nowrap max-w-xs truncate ${isDark ? 'text-text-primary' : 'text-gray-700'}`}>
                     {row[col] === undefined || row[col] === null ? (
-                      <span className={`italic ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>—</span>
+                      <span className={`italic ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>—</span>
                     ) : typeof row[col] === 'object' ? (
-                      <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>{JSON.stringify(row[col])}</span>
+                      <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{JSON.stringify(row[col])}</span>
                     ) : (
                       String(row[col])
                     )}

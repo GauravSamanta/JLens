@@ -18,12 +18,12 @@ function getTypeIcon(type: JsonNodeType) {
 
 function getTypeColor(type: JsonNodeType, isDark: boolean): string {
   switch (type) {
-    case 'string': return isDark ? 'text-emerald-400' : 'text-emerald-600'
-    case 'number': return isDark ? 'text-blue-400' : 'text-blue-600'
-    case 'boolean': return isDark ? 'text-orange-400' : 'text-orange-600'
-    case 'null': return isDark ? 'text-gray-500' : 'text-gray-400'
-    case 'object': return isDark ? 'text-purple-400' : 'text-purple-600'
-    case 'array': return isDark ? 'text-yellow-400' : 'text-yellow-600'
+    case 'string': return isDark ? 'text-accent-green' : 'text-emerald-700'
+    case 'number': return isDark ? 'text-accent-blue' : 'text-blue-700'
+    case 'boolean': return isDark ? 'text-accent-peach' : 'text-orange-700'
+    case 'null': return isDark ? 'text-text-faint' : 'text-gray-400'
+    case 'object': return isDark ? 'text-accent-mauve' : 'text-purple-600'
+    case 'array': return isDark ? 'text-accent-yellow' : 'text-yellow-600'
   }
 }
 
@@ -87,14 +87,14 @@ export function DetailPanel() {
     if (valueStr) navigator.clipboard.writeText(valueStr)
   }, [valueStr])
 
-  const border = isDark ? 'border-gray-800' : 'border-gray-200'
-  const label = isDark ? 'text-gray-500' : 'text-gray-400'
-  const copyBtn = isDark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+  const border = isDark ? 'border-border' : 'border-border-light'
+  const label = isDark ? 'text-text-faint' : 'text-gray-400'
+  const copyBtn = isDark ? 'text-subtle hover:text-text-primary' : 'text-gray-400 hover:text-gray-600'
 
   if (!selectedNode) {
     return (
       <div className={`w-80 border-l p-4 flex items-center justify-center ${border}`}>
-        <p className={`font-mono text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>Click a node to inspect</p>
+        <p className={`font-mono text-xs ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>Click a node to inspect</p>
       </div>
     )
   }
@@ -116,7 +116,7 @@ export function DetailPanel() {
             <Copy size={12} />
           </button>
         </div>
-        <p className={`font-mono text-xs break-all ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{selectedNodeId}</p>
+        <p className={`font-mono text-xs break-all ${isDark ? 'text-text-primary' : 'text-gray-700'}`}>{selectedNodeId}</p>
       </div>
 
       <div className={`px-3 py-2 border-b flex items-center gap-2 ${border}`}>
@@ -133,7 +133,7 @@ export function DetailPanel() {
         <div className={`px-3 py-2 border-b ${border}`}>
           <button
             onClick={() => setShowTable(true)}
-            className="flex items-center gap-1.5 text-xs font-mono text-blue-400 hover:text-blue-300"
+            className={`flex items-center gap-1.5 text-xs font-mono ${isDark ? 'text-accent-blue hover:text-accent-sky' : 'text-blue-600 hover:text-blue-500'}`}
           >
             <Table size={12} />
             View as Table
@@ -148,7 +148,7 @@ export function DetailPanel() {
             <Copy size={12} />
           </button>
         </div>
-        <pre className={`flex-1 overflow-auto px-3 pb-3 font-mono text-xs whitespace-pre-wrap break-all ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+        <pre className={`flex-1 overflow-auto px-3 pb-3 font-mono text-xs whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-gray-700'}`}>
           {valueStr}
         </pre>
       </div>
