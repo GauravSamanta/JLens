@@ -1,11 +1,13 @@
 import { create } from 'zustand'
-import type { ParseResult } from '../core/types'
+import type { ParseResult, JsonNode } from '../core/types'
 import { parseJson } from '../core/parser'
+import type { WorkerResponse } from '../workers/parser.worker'
 
 interface JsonState {
   rawInput: string
   parseResult: ParseResult | null
   parseError: string | null
+  isParsing: boolean
   expandedNodes: Set<string>
   selectedNodeId: string | null
 
@@ -36,10 +38,24 @@ function tryParse(input: string): { result: ParseResult | null; error: string | 
   }
 }
 
+const WORKER_THRESHOLD = 5_000_000
+let parserWorker: Worker | null = null
+
+function getWorker(): Worker {
+  if (!parserWorker) {
+    parserWorker = new Worker(
+      new URL('../workers/parser.worker.ts', import.meta.url),
+      { type: 'module' }
+    )
+  }
+  return parserWorker
+}
+
 export const useJsonStore = create<JsonState>((set, get) => ({
   rawInput: '',
   parseResult: null,
   parseError: null,
+  isParsing: false,
   expandedNodes: new Set<string>(['$']),
   selectedNodeId: null,
 
@@ -49,14 +65,58 @@ export const useJsonStore = create<JsonState>((set, get) => ({
   parseResultRight: null,
 
   setRawInput: (input) => {
-    const { result, error } = tryParse(input)
-    set({
-      rawInput: input,
-      parseResult: result,
-      parseError: error,
-      expandedNodes: new Set(['$']),
-      selectedNodeId: null,
-    })
+    if (!input.trim()) {
+      set({
+        rawInput: '',
+        parseResult: null,
+        parseError: null,
+        isParsing: false,
+        expandedNodes: new Set(['$']),
+        selectedNodeId: null,
+      })
+      return
+    }
+
+    if (input.length < WORKER_THRESHOLD) {
+      const { result, error } = tryParse(input)
+      set({
+        rawInput: input,
+        parseResult: result,
+        parseError: error,
+        isParsing: false,
+        expandedNodes: new Set(['$']),
+        selectedNodeId: null,
+      })
+    } else {
+      set({ rawInput: input, isParsing: true, parseResult: null, parseError: null })
+
+      const worker = getWorker()
+      worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+        const response = e.data
+        if (response.success && response.result) {
+          const nodes = new Map<string, JsonNode>(response.result.nodes)
+          set({
+            parseResult: {
+              nodes,
+              rootId: response.result.rootId,
+              totalNodes: response.result.totalNodes,
+              maxDepth: response.result.maxDepth,
+            },
+            parseError: null,
+            isParsing: false,
+            expandedNodes: new Set(['$']),
+            selectedNodeId: null,
+          })
+        } else {
+          set({
+            parseResult: null,
+            parseError: response.error || 'Parse failed',
+            isParsing: false,
+          })
+        }
+      }
+      worker.postMessage({ jsonString: input })
+    }
   },
 
   setRawInputLeft: (input) => {

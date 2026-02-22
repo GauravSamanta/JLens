@@ -20,6 +20,7 @@ function App() {
   const theme = useUIStore((s) => s.theme)
   const mode = useUIStore((s) => s.mode)
   const parseResult = useJsonStore((s) => s.parseResult)
+  const isParsing = useJsonStore((s) => s.isParsing)
   const isDark = theme === 'dark'
 
   useEffect(() => {
@@ -57,7 +58,13 @@ function App() {
       {mode === 'explore' && (
         <>
           <JsonInput />
-          {parseResult ? (
+          {isParsing ? (
+            <main className="flex-1 flex items-center justify-center">
+              <p className={`font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                Parsing large JSON...
+              </p>
+            </main>
+          ) : parseResult ? (
             <>
               <div className="flex flex-1 overflow-hidden">
                 <TreeView />
