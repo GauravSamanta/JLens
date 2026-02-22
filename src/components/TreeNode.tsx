@@ -26,7 +26,7 @@ function valueColor(type: string, isDark: boolean): string {
 function formatValue(node: JsonNode): string {
   if (node.type === 'string') {
     const str = node.value as string
-    const truncated = str.length > 100 ? str.slice(0, 100) + '\u2026' : str
+    const truncated = str.length > 60 ? str.slice(0, 60) + '\u2026' : str
     return `"${truncated}"`
   }
   if (node.type === 'null') return 'null'
@@ -53,7 +53,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
   return (
     <div
-      className={`flex items-center h-[28px] cursor-pointer group font-mono text-[13px] pr-4 transition-colors duration-75 ${rowBg}`}
+      className={`flex items-center h-[28px] cursor-pointer group font-mono text-[13px] pr-4 transition-colors duration-75 overflow-hidden whitespace-nowrap ${rowBg}`}
       style={{ paddingLeft: `${indent + 12}px` }}
       onClick={() => onSelect(node.id)}
     >
@@ -87,7 +87,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
           </span>
         )
       ) : (
-        <span className={valueColor(node.type, isDark)}>{formatValue(node)}</span>
+        <span className={`truncate ${valueColor(node.type, isDark)}`}>{formatValue(node)}</span>
       )}
 
       <button
