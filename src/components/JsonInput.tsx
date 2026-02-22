@@ -7,7 +7,7 @@ export function JsonInput() {
   const [collapsed, setCollapsed] = useState(false)
   const [localInput, setLocalInput] = useState(rawInput)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     setLocalInput(rawInput)
