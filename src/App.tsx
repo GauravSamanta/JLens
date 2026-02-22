@@ -1,12 +1,17 @@
+import { Toolbar } from './components/Toolbar'
+import { useUIStore } from './stores/uiStore'
+
 function App() {
+  const theme = useUIStore((s) => s.theme)
+
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <header className="border-b border-gray-800 px-4 py-3">
-        <h1 className="text-xl font-bold">JLens</h1>
-      </header>
-      <main className="p-4">
-        <p className="text-gray-400">JSON debugger loading...</p>
-      </main>
+    <div className={theme === 'dark' ? 'dark' : ''}>
+      <div className="min-h-screen bg-gray-950 text-gray-100">
+        <Toolbar />
+        <main className="p-4">
+          <p className="text-gray-500 font-mono text-sm">Paste or upload JSON to get started.</p>
+        </main>
+      </div>
     </div>
   )
 }
