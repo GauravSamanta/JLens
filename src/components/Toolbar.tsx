@@ -1,5 +1,6 @@
-import { Sun, Moon, HelpCircle } from 'lucide-react'
+import { Sun, Moon, HelpCircle, Link2 } from 'lucide-react'
 import { useUIStore, type AppMode } from '../stores/uiStore'
+import { useShareUrl } from '../hooks/useShareUrl'
 
 const modes: { id: AppMode; label: string }[] = [
   { id: 'explore', label: 'Explore' },
@@ -9,6 +10,7 @@ const modes: { id: AppMode; label: string }[] = [
 
 export function Toolbar() {
   const { mode, setMode, theme, toggleTheme } = useUIStore()
+  const { copyShareUrl, canShare, showCopied } = useShareUrl()
 
   return (
     <header className="flex items-center justify-between border-b border-gray-800 px-4 py-2">
@@ -33,6 +35,16 @@ export function Toolbar() {
         </nav>
       </div>
       <div className="flex items-center gap-2">
+        {canShare && (
+          <button
+            onClick={copyShareUrl}
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors"
+            title="Copy share link"
+          >
+            <Link2 size={16} />
+            {showCopied && <span className="text-xs text-green-400">Copied!</span>}
+          </button>
+        )}
         <button
           onClick={toggleTheme}
           className="rounded-md p-2 text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors"

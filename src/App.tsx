@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Toolbar } from './components/Toolbar'
 import { JsonInput } from './components/JsonInput'
 import { TreeView } from './components/TreeView'
@@ -7,8 +8,15 @@ import { QueryPanel } from './components/QueryPanel'
 import { DiffView } from './components/DiffView'
 import { useUIStore } from './stores/uiStore'
 import { useJsonStore } from './stores/jsonStore'
+import { useShareUrl } from './hooks/useShareUrl'
 
 function App() {
+  const { loadFromUrl } = useShareUrl()
+
+  useEffect(() => {
+    loadFromUrl()
+  }, [loadFromUrl])
+
   const theme = useUIStore((s) => s.theme)
   const mode = useUIStore((s) => s.mode)
   const parseResult = useJsonStore((s) => s.parseResult)
