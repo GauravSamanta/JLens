@@ -1,6 +1,7 @@
 import { useCallback, useState, useMemo } from 'react'
 import { Copy, Hash, Type, ToggleLeft, CircleSlash, Braces, List, Table } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
+import { useUIStore } from '../stores/uiStore'
 import { TableView } from './TableView'
 import type { JsonNodeType, ParseResult } from '../core/types'
 
@@ -15,14 +16,14 @@ function getTypeIcon(type: JsonNodeType) {
   }
 }
 
-function getTypeColor(type: JsonNodeType): string {
+function getTypeColor(type: JsonNodeType, isDark: boolean): string {
   switch (type) {
-    case 'string': return 'text-emerald-400'
-    case 'number': return 'text-blue-400'
-    case 'boolean': return 'text-orange-400'
-    case 'null': return 'text-gray-500'
-    case 'object': return 'text-purple-400'
-    case 'array': return 'text-yellow-400'
+    case 'string': return isDark ? 'text-emerald-400' : 'text-emerald-600'
+    case 'number': return isDark ? 'text-blue-400' : 'text-blue-600'
+    case 'boolean': return isDark ? 'text-orange-400' : 'text-orange-600'
+    case 'null': return isDark ? 'text-gray-500' : 'text-gray-400'
+    case 'object': return isDark ? 'text-purple-400' : 'text-purple-600'
+    case 'array': return isDark ? 'text-yellow-400' : 'text-yellow-600'
   }
 }
 
@@ -48,6 +49,7 @@ function reconstructValue(nodeId: string, parseResult: ParseResult): unknown {
 export function DetailPanel() {
   const parseResult = useJsonStore((s) => s.parseResult)
   const selectedNodeId = useJsonStore((s) => s.selectedNodeId)
+  const isDark = useUIStore((s) => s.theme) === 'dark'
   const [showTable, setShowTable] = useState(false)
 
   const selectedNode = parseResult && selectedNodeId ? parseResult.nodes.get(selectedNodeId) : null
@@ -85,39 +87,41 @@ export function DetailPanel() {
     if (valueStr) navigator.clipboard.writeText(valueStr)
   }, [valueStr])
 
+  const border = isDark ? 'border-gray-800' : 'border-gray-200'
+  const label = isDark ? 'text-gray-500' : 'text-gray-400'
+  const copyBtn = isDark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+
   if (!selectedNode) {
     return (
-      <div className="w-80 border-l border-gray-800 p-4 flex items-center justify-center">
-        <p className="text-gray-600 font-mono text-xs">Click a node to inspect</p>
+      <div className={`w-80 border-l p-4 flex items-center justify-center ${border}`}>
+        <p className={`font-mono text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>Click a node to inspect</p>
       </div>
     )
   }
 
   if (showTable && tableData) {
     return (
-      <div className="w-80 border-l border-gray-800 flex flex-col overflow-hidden">
+      <div className={`w-80 border-l flex flex-col overflow-hidden ${border}`}>
         <TableView data={tableData} onClose={() => setShowTable(false)} />
       </div>
     )
   }
 
   return (
-    <div className="w-80 border-l border-gray-800 flex flex-col overflow-hidden">
-      {/* Path */}
-      <div className="p-3 border-b border-gray-800">
+    <div className={`w-80 border-l flex flex-col overflow-hidden ${border}`}>
+      <div className={`p-3 border-b ${border}`}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-gray-500">PATH</span>
-          <button onClick={handleCopyPath} className="text-gray-600 hover:text-gray-300" title="Copy path">
+          <span className={`text-xs ${label}`}>PATH</span>
+          <button onClick={handleCopyPath} className={copyBtn} title="Copy path">
             <Copy size={12} />
           </button>
         </div>
-        <p className="font-mono text-xs text-gray-300 break-all">{selectedNodeId}</p>
+        <p className={`font-mono text-xs break-all ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{selectedNodeId}</p>
       </div>
 
-      {/* Type */}
-      <div className="px-3 py-2 border-b border-gray-800 flex items-center gap-2">
-        <span className="text-xs text-gray-500">TYPE</span>
-        <span className={`flex items-center gap-1 text-xs font-mono ${getTypeColor(selectedNode.type)}`}>
+      <div className={`px-3 py-2 border-b flex items-center gap-2 ${border}`}>
+        <span className={`text-xs ${label}`}>TYPE</span>
+        <span className={`flex items-center gap-1 text-xs font-mono ${getTypeColor(selectedNode.type, isDark)}`}>
           {getTypeIcon(selectedNode.type)}
           {selectedNode.type}
           {selectedNode.type === 'object' && ` (${selectedNode.childCount} keys)`}
@@ -125,9 +129,8 @@ export function DetailPanel() {
         </span>
       </div>
 
-      {/* View as Table button */}
       {isArrayOfObjects && (
-        <div className="px-3 py-2 border-b border-gray-800">
+        <div className={`px-3 py-2 border-b ${border}`}>
           <button
             onClick={() => setShowTable(true)}
             className="flex items-center gap-1.5 text-xs font-mono text-blue-400 hover:text-blue-300"
@@ -138,15 +141,14 @@ export function DetailPanel() {
         </div>
       )}
 
-      {/* Value */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="px-3 py-2 flex items-center justify-between">
-          <span className="text-xs text-gray-500">VALUE</span>
-          <button onClick={handleCopyValue} className="text-gray-600 hover:text-gray-300" title="Copy value">
+          <span className={`text-xs ${label}`}>VALUE</span>
+          <button onClick={handleCopyValue} className={copyBtn} title="Copy value">
             <Copy size={12} />
           </button>
         </div>
-        <pre className="flex-1 overflow-auto px-3 pb-3 font-mono text-xs text-gray-300 whitespace-pre-wrap break-all">
+        <pre className={`flex-1 overflow-auto px-3 pb-3 font-mono text-xs whitespace-pre-wrap break-all ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
           {valueStr}
         </pre>
       </div>

@@ -1,5 +1,6 @@
 import { memo, useCallback } from 'react'
 import { ChevronRight, ChevronDown, Copy } from 'lucide-react'
+import { useUIStore } from '../stores/uiStore'
 import type { JsonNode } from '../core/types'
 
 interface TreeNodeProps {
@@ -12,13 +13,13 @@ interface TreeNodeProps {
   onSelect: (nodeId: string) => void
 }
 
-function valueColor(type: string): string {
+function valueColor(type: string, isDark: boolean): string {
   switch (type) {
-    case 'string': return 'text-emerald-400'
-    case 'number': return 'text-blue-400'
-    case 'boolean': return 'text-orange-400'
-    case 'null': return 'text-gray-500 italic'
-    default: return 'text-gray-400'
+    case 'string': return isDark ? 'text-emerald-400' : 'text-emerald-600'
+    case 'number': return isDark ? 'text-blue-400' : 'text-blue-600'
+    case 'boolean': return isDark ? 'text-orange-400' : 'text-orange-600'
+    case 'null': return isDark ? 'text-gray-500 italic' : 'text-gray-400 italic'
+    default: return isDark ? 'text-gray-400' : 'text-gray-500'
   }
 }
 
@@ -35,6 +36,7 @@ function formatValue(node: JsonNode): string {
 }
 
 export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelected, isMatch, isActiveMatch, onToggle, onSelect }: TreeNodeProps) {
+  const isDark = useUIStore((s) => s.theme) === 'dark'
   const isContainer = node.type === 'object' || node.type === 'array'
   const indent = node.depth * 20
 
@@ -46,8 +48,8 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
   let rowStyle: string
   if (isActiveMatch) rowStyle = 'bg-yellow-900/40 ring-1 ring-yellow-500/30'
   else if (isMatch) rowStyle = 'bg-yellow-900/20'
-  else if (isSelected) rowStyle = 'bg-gray-800/60'
-  else rowStyle = 'hover:bg-gray-800/30'
+  else if (isSelected) rowStyle = isDark ? 'bg-gray-800/60' : 'bg-blue-50'
+  else rowStyle = isDark ? 'hover:bg-gray-800/30' : 'hover:bg-gray-100'
 
   return (
     <div
@@ -62,7 +64,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
               e.stopPropagation()
               onToggle(node.id)
             }}
-            className="text-gray-500 hover:text-gray-300"
+            className={isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
           >
             {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
@@ -71,26 +73,26 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
       {node.key !== '$' && (
         <>
-          <span className="text-gray-300">{node.key}</span>
-          <span className="text-gray-600 mx-1">:</span>
+          <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{node.key}</span>
+          <span className={`mx-1 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>:</span>
         </>
       )}
 
       {isContainer ? (
         isExpanded ? (
-          <span className="text-gray-500">{node.type === 'array' ? '[' : '{'}</span>
+          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
         ) : (
-          <span className="text-gray-500">
+          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>
             {node.type === 'array' ? `[${node.childCount} items]` : `{${node.childCount} keys}`}
           </span>
         )
       ) : (
-        <span className={valueColor(node.type)}>{formatValue(node)}</span>
+        <span className={valueColor(node.type, isDark)}>{formatValue(node)}</span>
       )}
 
       <button
         onClick={handleCopy}
-        className="ml-auto opacity-0 group-hover:opacity-100 text-gray-600 hover:text-gray-300 transition-opacity"
+        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
         title={`Copy path: ${node.id}`}
       >
         <Copy size={12} />

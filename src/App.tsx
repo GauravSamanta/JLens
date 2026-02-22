@@ -20,32 +20,62 @@ function App() {
   const theme = useUIStore((s) => s.theme)
   const mode = useUIStore((s) => s.mode)
   const parseResult = useJsonStore((s) => s.parseResult)
+  const isDark = theme === 'dark'
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey
+
+      if (mod && e.key === 'k') {
+        e.preventDefault()
+        const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement
+        searchInput?.focus()
+      }
+
+      if (mod && e.key === 'e' && !e.shiftKey) {
+        e.preventDefault()
+        useJsonStore.getState().expandAll()
+      }
+
+      if (mod && e.key === 'e' && e.shiftKey) {
+        e.preventDefault()
+        useJsonStore.getState().collapseAll()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   return (
-    <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="h-screen bg-gray-950 text-gray-100 flex flex-col">
-        <Toolbar />
-        {mode === 'explore' && (
-          <>
-            <JsonInput />
-            {parseResult ? (
-              <>
-                <div className="flex flex-1 overflow-hidden">
-                  <TreeView />
-                  <DetailPanel />
-                </div>
-                <SearchBar />
-              </>
-            ) : (
-              <main className="flex-1 flex items-center justify-center">
-                <p className="text-gray-600 font-mono text-sm">No JSON loaded.</p>
-              </main>
-            )}
-          </>
-        )}
-        {mode === 'diff' && <DiffView />}
-        {mode === 'query' && <QueryPanel />}
-      </div>
+    <div className={`h-screen flex flex-col ${
+      isDark
+        ? 'bg-gray-950 text-gray-100'
+        : 'bg-white text-gray-900'
+    }`}>
+      <Toolbar />
+      {mode === 'explore' && (
+        <>
+          <JsonInput />
+          {parseResult ? (
+            <>
+              <div className="flex flex-1 overflow-hidden">
+                <TreeView />
+                <DetailPanel />
+              </div>
+              <SearchBar />
+            </>
+          ) : (
+            <main className="flex-1 flex items-center justify-center">
+              <p className={`font-mono text-sm ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+                No JSON loaded.
+              </p>
+            </main>
+          )}
+        </>
+      )}
+      {mode === 'diff' && <DiffView />}
+      {mode === 'query' && <QueryPanel />}
     </div>
   )
 }

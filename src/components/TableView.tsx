@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { ArrowUp, ArrowDown, X } from 'lucide-react'
+import { useUIStore } from '../stores/uiStore'
 
 interface TableViewProps {
   data: Record<string, unknown>[]
@@ -7,6 +8,7 @@ interface TableViewProps {
 }
 
 export function TableView({ data, onClose }: TableViewProps) {
+  const isDark = useUIStore((s) => s.theme) === 'dark'
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
@@ -38,23 +40,29 @@ export function TableView({ data, onClose }: TableViewProps) {
     }
   }
 
+  const border = isDark ? 'border-gray-800' : 'border-gray-200'
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-800">
-        <span className="text-xs text-gray-500 font-mono">TABLE VIEW ({data.length} rows, {columns.length} columns)</span>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-300">
+      <div className={`flex items-center justify-between px-3 py-2 border-b ${border}`}>
+        <span className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+          TABLE VIEW ({data.length} rows, {columns.length} columns)
+        </span>
+        <button onClick={onClose} className={isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}>
           <X size={14} />
         </button>
       </div>
       <div className="flex-1 overflow-auto">
         <table className="w-full border-collapse font-mono text-xs">
           <thead>
-            <tr className="border-b border-gray-800">
+            <tr className={`border-b ${border}`}>
               {columns.map((col) => (
                 <th
                   key={col}
                   onClick={() => handleSort(col)}
-                  className="text-left px-3 py-2 text-gray-400 cursor-pointer hover:text-gray-200 select-none whitespace-nowrap"
+                  className={`text-left px-3 py-2 cursor-pointer select-none whitespace-nowrap ${
+                    isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                 >
                   <span className="flex items-center gap-1">
                     {col}
@@ -66,13 +74,13 @@ export function TableView({ data, onClose }: TableViewProps) {
           </thead>
           <tbody>
             {sortedData.map((row, i) => (
-              <tr key={i} className="border-b border-gray-900 hover:bg-gray-800/30">
+              <tr key={i} className={`border-b ${isDark ? 'border-gray-900 hover:bg-gray-800/30' : 'border-gray-100 hover:bg-gray-50'}`}>
                 {columns.map((col) => (
-                  <td key={col} className="px-3 py-1.5 text-gray-300 whitespace-nowrap max-w-xs truncate">
+                  <td key={col} className={`px-3 py-1.5 whitespace-nowrap max-w-xs truncate ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     {row[col] === undefined || row[col] === null ? (
-                      <span className="text-gray-600 italic">—</span>
+                      <span className={`italic ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>—</span>
                     ) : typeof row[col] === 'object' ? (
-                      <span className="text-gray-500">{JSON.stringify(row[col])}</span>
+                      <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>{JSON.stringify(row[col])}</span>
                     ) : (
                       String(row[col])
                     )}

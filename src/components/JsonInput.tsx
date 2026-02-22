@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Upload, Eraser, WrapText, ChevronDown, ChevronRight } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
+import { useUIStore } from '../stores/uiStore'
 
 export function JsonInput() {
   const { rawInput, setRawInput, parseError, parseResult } = useJsonStore()
+  const isDark = useUIStore((s) => s.theme) === 'dark'
   const [collapsed, setCollapsed] = useState(false)
   const [localInput, setLocalInput] = useState(rawInput)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -61,19 +63,24 @@ export function JsonInput() {
     }
   }, [parseResult, parseError])
 
+  const border = isDark ? 'border-gray-800' : 'border-gray-200'
+  const btnClass = isDark
+    ? 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+
   if (collapsed && parseResult) {
     return (
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-800">
+      <div className={`flex items-center gap-2 px-4 py-2 border-b ${border}`}>
         <button
           onClick={() => setCollapsed(false)}
-          className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-200 font-mono"
+          className={`flex items-center gap-1 text-sm font-mono ${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
         >
           <ChevronRight size={14} />
           JSON loaded ({parseResult.totalNodes} nodes, depth {parseResult.maxDepth})
         </button>
         <button
           onClick={handleClear}
-          className="text-sm text-gray-500 hover:text-gray-300 ml-auto"
+          className={`text-sm ml-auto ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Clear
         </button>
@@ -82,21 +89,21 @@ export function JsonInput() {
   }
 
   return (
-    <div className="border-b border-gray-800 p-4">
+    <div className={`border-b p-4 ${border}`}>
       <div className="flex items-center gap-2 mb-2">
         {parseResult && (
           <button
             onClick={() => setCollapsed(true)}
-            className="text-gray-400 hover:text-gray-200"
+            className={isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}
           >
             <ChevronDown size={14} />
           </button>
         )}
-        <span className="text-xs text-gray-500 font-mono">INPUT</span>
+        <span className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>INPUT</span>
         <div className="flex items-center gap-1 ml-auto">
           <button
             onClick={handleFormat}
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
             title="Format JSON"
           >
             <WrapText size={14} />
@@ -104,7 +111,7 @@ export function JsonInput() {
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
             title="Upload file"
           >
             <Upload size={14} />
@@ -112,7 +119,7 @@ export function JsonInput() {
           </button>
           <button
             onClick={handleClear}
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
             title="Clear"
           >
             <Eraser size={14} />
@@ -136,7 +143,11 @@ export function JsonInput() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         placeholder="Paste JSON here..."
-        className="w-full h-40 resize-y rounded bg-gray-900 border border-gray-800 p-3 font-mono text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gray-600"
+        className={`w-full h-40 resize-y rounded border p-3 font-mono text-sm focus:outline-none ${
+          isDark
+            ? 'bg-gray-900 border-gray-800 text-gray-200 placeholder-gray-600 focus:border-gray-600'
+            : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400 focus:border-gray-400'
+        }`}
         spellCheck={false}
       />
       {parseError && (
