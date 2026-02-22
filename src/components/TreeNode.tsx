@@ -6,6 +6,8 @@ interface TreeNodeProps {
   node: JsonNode
   isExpanded: boolean
   isSelected: boolean
+  isMatch: boolean
+  isActiveMatch: boolean
   onToggle: (nodeId: string) => void
   onSelect: (nodeId: string) => void
 }
@@ -32,7 +34,7 @@ function formatValue(node: JsonNode): string {
   return ''
 }
 
-export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelected, onToggle, onSelect }: TreeNodeProps) {
+export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelected, isMatch, isActiveMatch, onToggle, onSelect }: TreeNodeProps) {
   const isContainer = node.type === 'object' || node.type === 'array'
   const indent = node.depth * 20
 
@@ -41,11 +43,15 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
     navigator.clipboard.writeText(node.id)
   }, [node.id])
 
+  let rowStyle: string
+  if (isActiveMatch) rowStyle = 'bg-yellow-900/40 ring-1 ring-yellow-500/30'
+  else if (isMatch) rowStyle = 'bg-yellow-900/20'
+  else if (isSelected) rowStyle = 'bg-gray-800/60'
+  else rowStyle = 'hover:bg-gray-800/30'
+
   return (
     <div
-      className={`flex items-center h-7 cursor-pointer group font-mono text-sm pr-4 ${
-        isSelected ? 'bg-gray-800/60' : 'hover:bg-gray-800/30'
-      }`}
+      className={`flex items-center h-7 cursor-pointer group font-mono text-sm pr-4 ${rowStyle}`}
       style={{ paddingLeft: `${indent + 8}px` }}
       onClick={() => onSelect(node.id)}
     >

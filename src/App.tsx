@@ -2,6 +2,7 @@ import { Toolbar } from './components/Toolbar'
 import { JsonInput } from './components/JsonInput'
 import { TreeView } from './components/TreeView'
 import { DetailPanel } from './components/DetailPanel'
+import { SearchBar } from './components/SearchBar'
 import { useUIStore } from './stores/uiStore'
 import { useJsonStore } from './stores/jsonStore'
 
@@ -18,10 +19,13 @@ function App() {
           <>
             <JsonInput />
             {parseResult ? (
-              <div className="flex flex-1 overflow-hidden">
-                <TreeView />
-                <DetailPanel />
-              </div>
+              <>
+                <div className="flex flex-1 overflow-hidden">
+                  <TreeView />
+                  <DetailPanel />
+                </div>
+                <SearchBar />
+              </>
             ) : (
               <main className="flex-1 flex items-center justify-center">
                 <p className="text-gray-600 font-mono text-sm">No JSON loaded.</p>

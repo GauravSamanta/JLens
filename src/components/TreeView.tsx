@@ -1,13 +1,17 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useJsonStore } from '../stores/jsonStore'
+import { useSearchStore } from '../stores/searchStore'
 import { useVisibleNodes } from '../hooks/useVisibleNodes'
 import { TreeNodeRow } from './TreeNode'
 
 export function TreeView() {
   const { parseResult, expandedNodes, selectedNodeId, toggleNode, selectNode } = useJsonStore()
+  const { matchIds, activeMatchIndex } = useSearchStore()
   const visibleNodeIds = useVisibleNodes(parseResult, expandedNodes)
   const parentRef = useRef<HTMLDivElement>(null)
+  const matchSet = useMemo(() => new Set(matchIds), [matchIds])
+  const activeMatchId = matchIds[activeMatchIndex] ?? null
 
   const virtualizer = useVirtualizer({
     count: visibleNodeIds.length,
@@ -48,6 +52,8 @@ export function TreeView() {
                 node={node}
                 isExpanded={expandedNodes.has(nodeId)}
                 isSelected={selectedNodeId === nodeId}
+                isMatch={matchSet.has(nodeId)}
+                isActiveMatch={activeMatchId === nodeId}
                 onToggle={toggleNode}
                 onSelect={selectNode}
               />
