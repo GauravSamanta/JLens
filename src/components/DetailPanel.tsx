@@ -1,6 +1,7 @@
-import { useCallback } from 'react'
-import { Copy, Hash, Type, ToggleLeft, CircleSlash, Braces, List } from 'lucide-react'
+import { useCallback, useState, useMemo } from 'react'
+import { Copy, Hash, Type, ToggleLeft, CircleSlash, Braces, List, Table } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
+import { TableView } from './TableView'
 import type { JsonNodeType, ParseResult } from '../core/types'
 
 function getTypeIcon(type: JsonNodeType) {
@@ -47,6 +48,7 @@ function reconstructValue(nodeId: string, parseResult: ParseResult): unknown {
 export function DetailPanel() {
   const parseResult = useJsonStore((s) => s.parseResult)
   const selectedNodeId = useJsonStore((s) => s.selectedNodeId)
+  const [showTable, setShowTable] = useState(false)
 
   const selectedNode = parseResult && selectedNodeId ? parseResult.nodes.get(selectedNodeId) : null
 
@@ -58,6 +60,22 @@ export function DetailPanel() {
       ? JSON.stringify(fullValue, null, 2)
       : String(selectedNode.value)
     : ''
+
+  const isArrayOfObjects = useMemo(() => {
+    if (!selectedNode || !parseResult || selectedNode.type !== 'array' || selectedNode.childCount === 0) return false
+    const objectChildren = selectedNode.childIds.filter((id) => {
+      const child = parseResult.nodes.get(id)
+      return child?.type === 'object'
+    })
+    return objectChildren.length / selectedNode.childCount >= 0.5
+  }, [selectedNode, parseResult])
+
+  const tableData = useMemo(() => {
+    if (!isArrayOfObjects || !Array.isArray(fullValue)) return null
+    return fullValue.filter((item): item is Record<string, unknown> =>
+      item !== null && typeof item === 'object' && !Array.isArray(item)
+    )
+  }, [isArrayOfObjects, fullValue])
 
   const handleCopyPath = useCallback(() => {
     if (selectedNodeId) navigator.clipboard.writeText(selectedNodeId)
@@ -71,6 +89,14 @@ export function DetailPanel() {
     return (
       <div className="w-80 border-l border-gray-800 p-4 flex items-center justify-center">
         <p className="text-gray-600 font-mono text-xs">Click a node to inspect</p>
+      </div>
+    )
+  }
+
+  if (showTable && tableData) {
+    return (
+      <div className="w-80 border-l border-gray-800 flex flex-col overflow-hidden">
+        <TableView data={tableData} onClose={() => setShowTable(false)} />
       </div>
     )
   }
@@ -98,6 +124,19 @@ export function DetailPanel() {
           {selectedNode.type === 'array' && ` (${selectedNode.childCount} items)`}
         </span>
       </div>
+
+      {/* View as Table button */}
+      {isArrayOfObjects && (
+        <div className="px-3 py-2 border-b border-gray-800">
+          <button
+            onClick={() => setShowTable(true)}
+            className="flex items-center gap-1.5 text-xs font-mono text-blue-400 hover:text-blue-300"
+          >
+            <Table size={12} />
+            View as Table
+          </button>
+        </div>
+      )}
 
       {/* Value */}
       <div className="flex-1 flex flex-col overflow-hidden">
