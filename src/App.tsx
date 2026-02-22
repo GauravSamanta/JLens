@@ -3,6 +3,7 @@ import { JsonInput } from './components/JsonInput'
 import { TreeView } from './components/TreeView'
 import { DetailPanel } from './components/DetailPanel'
 import { SearchBar } from './components/SearchBar'
+import { QueryPanel } from './components/QueryPanel'
 import { useUIStore } from './stores/uiStore'
 import { useJsonStore } from './stores/jsonStore'
 
@@ -38,11 +39,7 @@ function App() {
             <p className="text-gray-500 font-mono text-sm">Diff view coming soon.</p>
           </main>
         )}
-        {mode === 'query' && (
-          <main className="flex-1 p-4">
-            <p className="text-gray-500 font-mono text-sm">Query panel coming soon.</p>
-          </main>
-        )}
+        {mode === 'query' && <QueryPanel />}
       </div>
     </div>
   )
