@@ -49,7 +49,7 @@ function App() {
   }, [])
 
   return (
-    <div className={`h-screen flex flex-col ${
+    <div className={`h-screen flex flex-col noise-bg ${
       isDark
         ? 'bg-base text-text-primary'
         : 'bg-base-light text-text-light'
@@ -60,9 +60,12 @@ function App() {
           <JsonInput />
           {isParsing ? (
             <main className="flex-1 flex items-center justify-center">
-              <p className={`font-mono text-sm ${isDark ? 'text-text-secondary' : 'text-text-light-secondary'}`}>
-                Parsing large JSON...
-              </p>
+              <div className="flex flex-col items-center gap-3">
+                <div className={`w-5 h-5 rounded-full border-2 border-t-transparent animate-spin ${isDark ? 'border-accent-blue' : 'border-blue-500'}`} />
+                <p className={`font-mono text-xs tracking-wide ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+                  PARSING
+                </p>
+              </div>
             </main>
           ) : parseResult ? (
             <>
@@ -74,9 +77,11 @@ function App() {
             </>
           ) : (
             <main className="flex-1 flex items-center justify-center">
-              <p className={`font-mono text-sm ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
-                No JSON loaded.
-              </p>
+              <div className="flex flex-col items-center gap-3">
+                <p className={`font-mono text-[11px] tracking-[0.2em] uppercase ${isDark ? 'text-muted' : 'text-text-light-secondary'}`}>
+                  Paste or upload JSON to begin
+                </p>
+              </div>
             </main>
           )}
         </>

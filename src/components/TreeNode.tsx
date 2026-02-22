@@ -26,7 +26,7 @@ function valueColor(type: string, isDark: boolean): string {
 function formatValue(node: JsonNode): string {
   if (node.type === 'string') {
     const str = node.value as string
-    const truncated = str.length > 120 ? str.slice(0, 120) + '...' : str
+    const truncated = str.length > 100 ? str.slice(0, 100) + '\u2026' : str
     return `"${truncated}"`
   }
   if (node.type === 'null') return 'null'
@@ -38,35 +38,35 @@ function formatValue(node: JsonNode): string {
 export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelected, isMatch, isActiveMatch, onToggle, onSelect }: TreeNodeProps) {
   const isDark = useUIStore((s) => s.theme) === 'dark'
   const isContainer = node.type === 'object' || node.type === 'array'
-  const indent = node.depth * 20
+  const indent = node.depth * 18
 
   const handleCopy = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     navigator.clipboard.writeText(node.id)
   }, [node.id])
 
-  let rowStyle: string
-  if (isActiveMatch) rowStyle = isDark ? 'bg-accent-yellow/20 ring-1 ring-accent-yellow/30' : 'bg-yellow-100 ring-1 ring-yellow-300/50'
-  else if (isMatch) rowStyle = isDark ? 'bg-accent-yellow/10' : 'bg-yellow-50'
-  else if (isSelected) rowStyle = isDark ? 'bg-overlay/60' : 'bg-blue-50'
-  else rowStyle = isDark ? 'hover:bg-overlay/30' : 'hover:bg-gray-100'
+  let rowBg: string
+  if (isActiveMatch) rowBg = isDark ? 'bg-accent-yellow/15 ring-1 ring-inset ring-accent-yellow/25' : 'bg-yellow-100 ring-1 ring-inset ring-yellow-300/50'
+  else if (isMatch) rowBg = isDark ? 'bg-accent-yellow/8' : 'bg-yellow-50'
+  else if (isSelected) rowBg = isDark ? 'bg-accent-blue/8' : 'bg-blue-50/80'
+  else rowBg = isDark ? 'hover:bg-overlay/25' : 'hover:bg-black/[0.02]'
 
   return (
     <div
-      className={`flex items-center h-7 cursor-pointer group font-mono text-sm pr-4 ${rowStyle}`}
-      style={{ paddingLeft: `${indent + 8}px` }}
+      className={`flex items-center h-[28px] cursor-pointer group font-mono text-[13px] pr-4 transition-colors duration-75 ${rowBg}`}
+      style={{ paddingLeft: `${indent + 12}px` }}
       onClick={() => onSelect(node.id)}
     >
-      <span className="w-5 flex-shrink-0 flex items-center justify-center">
+      <span className="w-4 flex-shrink-0 flex items-center justify-center">
         {isContainer ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onToggle(node.id)
             }}
-            className={isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}
+            className={`transition-colors ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           </button>
         ) : null}
       </span>
@@ -74,16 +74,16 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
       {node.key !== '$' && (
         <>
           <span className={isDark ? 'text-text-primary' : 'text-gray-700'}>{node.key}</span>
-          <span className={`mx-1 ${isDark ? 'text-subtle' : 'text-gray-400'}`}>:</span>
+          <span className={`mx-1 ${isDark ? 'text-muted' : 'text-gray-300'}`}>:</span>
         </>
       )}
 
       {isContainer ? (
         isExpanded ? (
-          <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
+          <span className={isDark ? 'text-subtle' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
         ) : (
           <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>
-            {node.type === 'array' ? `[${node.childCount} items]` : `{${node.childCount} keys}`}
+            {node.type === 'array' ? `[${node.childCount}]` : `{${node.childCount}}`}
           </span>
         )
       ) : (
@@ -92,10 +92,10 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
       <button
         onClick={handleCopy}
-        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
-        title={`Copy path: ${node.id}`}
+        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-100 ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-300 hover:text-gray-500'}`}
+        title={node.id}
       >
-        <Copy size={12} />
+        <Copy size={11} />
       </button>
     </div>
   )

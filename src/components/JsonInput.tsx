@@ -63,24 +63,25 @@ export function JsonInput() {
     }
   }, [parseResult, parseError])
 
-  const border = isDark ? 'border-border' : 'border-border-light'
   const btnClass = isDark
-    ? 'text-text-secondary hover:bg-overlay hover:text-text-primary'
-    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+    ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
+    : 'text-text-light-secondary hover:text-text-light hover:bg-surface-light'
 
   if (collapsed && parseResult) {
     return (
-      <div className={`flex items-center gap-2 px-4 py-2 border-b ${border}`}>
+      <div className={`flex items-center gap-3 px-5 py-2 border-b ${isDark ? 'border-border' : 'border-border-light'}`}>
         <button
           onClick={() => setCollapsed(false)}
-          className={`flex items-center gap-1 text-sm font-mono ${isDark ? 'text-text-secondary hover:text-text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`flex items-center gap-1.5 text-xs font-mono ${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-text-light-secondary hover:text-text-light'}`}
         >
-          <ChevronRight size={14} />
-          JSON loaded ({parseResult.totalNodes} nodes, depth {parseResult.maxDepth})
+          <ChevronRight size={12} />
+          <span className="tracking-wide">{parseResult.totalNodes} nodes</span>
+          <span className={isDark ? 'text-subtle' : 'text-text-light-secondary'}>·</span>
+          <span className="tracking-wide">depth {parseResult.maxDepth}</span>
         </button>
         <button
           onClick={handleClear}
-          className={`text-sm ml-auto ${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`text-xs ml-auto ${isDark ? 'text-text-faint hover:text-accent-red' : 'text-text-light-secondary hover:text-red-500'}`}
         >
           Clear
         </button>
@@ -89,41 +90,31 @@ export function JsonInput() {
   }
 
   return (
-    <div className={`border-b p-4 ${border}`}>
+    <div className={`border-b px-5 py-3 ${isDark ? 'border-border' : 'border-border-light'}`}>
       <div className="flex items-center gap-2 mb-2">
         {parseResult && (
           <button
             onClick={() => setCollapsed(true)}
-            className={isDark ? 'text-text-secondary hover:text-text-primary' : 'text-gray-500 hover:text-gray-700'}
+            className={isDark ? 'text-text-faint hover:text-text-secondary' : 'text-text-light-secondary hover:text-text-light'}
           >
-            <ChevronDown size={14} />
+            <ChevronDown size={12} />
           </button>
         )}
-        <span className={`text-xs font-mono ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>INPUT</span>
-        <div className="flex items-center gap-1 ml-auto">
-          <button
-            onClick={handleFormat}
-            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
-            title="Format JSON"
-          >
-            <WrapText size={14} />
-            Format
+        <span className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+          Input
+        </span>
+        <div className="flex items-center gap-0.5 ml-auto">
+          <button onClick={handleFormat} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Format">
+            <WrapText size={12} />
+            <span className="hidden sm:inline">Format</span>
           </button>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
-            title="Upload file"
-          >
-            <Upload size={14} />
-            Upload
+          <button onClick={() => fileInputRef.current?.click()} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Upload">
+            <Upload size={12} />
+            <span className="hidden sm:inline">Upload</span>
           </button>
-          <button
-            onClick={handleClear}
-            className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${btnClass}`}
-            title="Clear"
-          >
-            <Eraser size={14} />
-            Clear
+          <button onClick={handleClear} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Clear">
+            <Eraser size={12} />
+            <span className="hidden sm:inline">Clear</span>
           </button>
         </div>
         <input
@@ -143,15 +134,15 @@ export function JsonInput() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         placeholder="Paste JSON here..."
-        className={`w-full h-40 resize-y rounded border p-3 font-mono text-sm focus:outline-none ${
+        className={`w-full h-36 resize-y rounded-lg border p-3.5 font-mono text-[13px] leading-relaxed focus:outline-none transition-colors duration-150 ${
           isDark
-            ? 'bg-surface border-border text-text-primary placeholder-text-faint focus:border-overlay'
-            : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400 focus:border-gray-400'
+            ? 'bg-base border-border text-text-primary placeholder-muted focus:border-accent-blue/40'
+            : 'bg-white border-border-light text-text-light placeholder-text-light-secondary focus:border-blue-400/50'
         }`}
         spellCheck={false}
       />
       {parseError && (
-        <p className="mt-1 text-xs text-accent-red font-mono">{parseError}</p>
+        <p className="mt-1.5 text-xs text-accent-red font-mono">{parseError}</p>
       )}
     </div>
   )

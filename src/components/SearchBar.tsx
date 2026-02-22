@@ -29,39 +29,35 @@ export function SearchBar() {
     }
   }
 
+  const btnClass = isDark
+    ? 'text-text-faint hover:text-text-secondary'
+    : 'text-text-light-secondary hover:text-text-light'
+
   return (
-    <div className={`flex items-center gap-2 border-t px-4 py-2 ${isDark ? 'border-border' : 'border-border-light'}`}>
-      <Search size={14} className={`flex-shrink-0 ${isDark ? 'text-text-faint' : 'text-gray-400'}`} />
+    <div className={`flex items-center gap-2 border-t px-5 py-2 ${isDark ? 'border-border bg-mantle' : 'border-border-light bg-surface-light'}`}>
+      <Search size={13} className={isDark ? 'text-subtle' : 'text-gray-400'} />
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Search keys and values... (key: or value: prefix)"
-        className={`flex-1 bg-transparent text-sm font-mono focus:outline-none ${
-          isDark
-            ? 'text-text-primary placeholder-text-faint'
-            : 'text-gray-800 placeholder-gray-400'
+        placeholder="Search keys & values…"
+        className={`flex-1 bg-transparent text-[13px] font-mono focus:outline-none ${
+          isDark ? 'text-text-primary placeholder-text-faint' : 'text-text-light placeholder-text-light-secondary'
         }`}
         data-search-input
       />
       {query && (
-        <>
-          <span className={`text-xs font-mono tabular-nums ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
+        <div className="flex items-center gap-1">
+          <span className={`text-[11px] font-mono tabular-nums ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
             {matchIds.length > 0
-              ? `${activeMatchIndex + 1} of ${matchIds.length}`
-              : 'No matches'}
+              ? `${activeMatchIndex + 1}/${matchIds.length}`
+              : '0'}
           </span>
-          <button onClick={prevMatch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Previous (Shift+Enter)">
-            <ChevronUp size={14} />
-          </button>
-          <button onClick={nextMatch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Next (Enter)">
-            <ChevronDown size={14} />
-          </button>
-          <button onClick={clearSearch} className={`${isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`} title="Clear (Esc)">
-            <X size={14} />
-          </button>
-        </>
+          <button onClick={prevMatch} className={btnClass} title="Previous"><ChevronUp size={13} /></button>
+          <button onClick={nextMatch} className={btnClass} title="Next"><ChevronDown size={13} /></button>
+          <button onClick={clearSearch} className={btnClass} title="Clear"><X size={13} /></button>
+        </div>
       )}
     </div>
   )

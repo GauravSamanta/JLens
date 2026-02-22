@@ -1,44 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark theme - warm, easy on the eyes (Catppuccin Mocha inspired) */
-  --color-base: #1e1e2e;
-  --color-surface: #282839;
-  --color-mantle: #232334;
-  --color-overlay: #3b3b52;
-  --color-muted: #6c7086;
-  --color-subtle: #585b70;
-  --color-text-primary: #cdd6f4;
-  --color-text-secondary: #a6adc8;
-  --color-text-faint: #7f849c;
-  --color-border: #3b3b52;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
-  /* Light theme - warm off-white */
-  --color-base-light: #f5f3ef;
-  --color-surface-light: #edeae4;
-  --color-text-light: #4c4f69;
+  /* Dark theme - warm industrial navy */
+  --color-base: #1e1d25;
+  --color-surface: #262430;
+  --color-mantle: #22202b;
+  --color-overlay: #36313d;
+  --color-muted: #706778;
+  --color-subtle: #564f60;
+  --color-text-primary: #d6d0c7;
+  --color-text-secondary: #aaa298;
+  --color-text-faint: #7a7284;
+  --color-border: #332e3a;
+
+  /* Light theme - warm parchment */
+  --color-base-light: #f8f6f1;
+  --color-surface-light: #efece5;
+  --color-text-light: #3b3d50;
   --color-text-light-secondary: #6c6f85;
-  --color-border-light: #d4d0c8;
+  --color-border-light: #ddd9cf;
 
-  /* Accent colors (softer, pastel) */
-  --color-accent-blue: #89b4fa;
-  --color-accent-green: #a6e3a1;
-  --color-accent-red: #f38ba8;
-  --color-accent-yellow: #f9e2af;
-  --color-accent-peach: #fab387;
-  --color-accent-mauve: #cba6f7;
-  --color-accent-teal: #94e2d5;
-  --color-accent-sky: #89dcfe;
+  /* Accent colors - warm, restrained, purposeful */
+  --color-accent-blue: #7ca7e4;
+  --color-accent-green: #a3c97a;
+  --color-accent-red: #e87c8a;
+  --color-accent-yellow: #dbb06c;
+  --color-accent-peach: #e8a472;
+  --color-accent-mauve: #b39be0;
+  --color-accent-teal: #79c9b8;
+  --color-accent-sky: #82c4e8;
 }
 
 html, body, #root {
   height: 100%;
   margin: 0;
+  font-family: var(--font-sans);
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -47,7 +51,7 @@ html, body, #root {
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-overlay);
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -55,5 +59,16 @@ html, body, #root {
 }
 
 ::selection {
-  background: rgba(137, 180, 250, 0.3);
+  background: rgba(122, 162, 247, 0.25);
+}
+
+/* Subtle noise texture for depth */
+.noise-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.015;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 9999;
 }

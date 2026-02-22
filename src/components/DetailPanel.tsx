@@ -7,12 +7,12 @@ import type { JsonNodeType, ParseResult } from '../core/types'
 
 function getTypeIcon(type: JsonNodeType) {
   switch (type) {
-    case 'string': return <Type size={14} />
-    case 'number': return <Hash size={14} />
-    case 'boolean': return <ToggleLeft size={14} />
-    case 'null': return <CircleSlash size={14} />
-    case 'object': return <Braces size={14} />
-    case 'array': return <List size={14} />
+    case 'string': return <Type size={12} />
+    case 'number': return <Hash size={12} />
+    case 'boolean': return <ToggleLeft size={12} />
+    case 'null': return <CircleSlash size={12} />
+    case 'object': return <Braces size={12} />
+    case 'array': return <List size={12} />
   }
 }
 
@@ -22,8 +22,8 @@ function getTypeColor(type: JsonNodeType, isDark: boolean): string {
     case 'number': return isDark ? 'text-accent-blue' : 'text-blue-700'
     case 'boolean': return isDark ? 'text-accent-peach' : 'text-orange-700'
     case 'null': return isDark ? 'text-text-faint' : 'text-gray-400'
-    case 'object': return isDark ? 'text-accent-mauve' : 'text-purple-600'
-    case 'array': return isDark ? 'text-accent-yellow' : 'text-yellow-600'
+    case 'object': return isDark ? 'text-accent-mauve' : 'text-purple-700'
+    case 'array': return isDark ? 'text-accent-yellow' : 'text-amber-700'
   }
 }
 
@@ -88,67 +88,65 @@ export function DetailPanel() {
   }, [valueStr])
 
   const border = isDark ? 'border-border' : 'border-border-light'
-  const label = isDark ? 'text-text-faint' : 'text-gray-400'
-  const copyBtn = isDark ? 'text-subtle hover:text-text-primary' : 'text-gray-400 hover:text-gray-600'
+  const label = isDark ? 'text-muted' : 'text-text-light-secondary'
+  const copyBtn = isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'
 
   if (!selectedNode) {
     return (
-      <div className={`w-80 border-l p-4 flex items-center justify-center ${border}`}>
-        <p className={`font-mono text-xs ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>Click a node to inspect</p>
+      <div className={`w-72 border-l flex items-center justify-center ${border} ${isDark ? 'bg-mantle' : 'bg-surface-light'}`}>
+        <p className={`font-mono text-[11px] tracking-wide ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+          Select a node
+        </p>
       </div>
     )
   }
 
   if (showTable && tableData) {
     return (
-      <div className={`w-80 border-l flex flex-col overflow-hidden ${border}`}>
+      <div className={`w-72 border-l flex flex-col overflow-hidden ${border} ${isDark ? 'bg-mantle' : 'bg-surface-light'}`}>
         <TableView data={tableData} onClose={() => setShowTable(false)} />
       </div>
     )
   }
 
   return (
-    <div className={`w-80 border-l flex flex-col overflow-hidden ${border}`}>
-      <div className={`p-3 border-b ${border}`}>
+    <div className={`w-72 border-l flex flex-col overflow-hidden ${border} ${isDark ? 'bg-mantle' : 'bg-surface-light'}`}>
+      <div className={`px-4 py-2.5 border-b ${border}`}>
         <div className="flex items-center justify-between mb-1">
-          <span className={`text-xs ${label}`}>PATH</span>
-          <button onClick={handleCopyPath} className={copyBtn} title="Copy path">
-            <Copy size={12} />
-          </button>
+          <span className={`text-[10px] font-medium tracking-widest uppercase ${label}`}>Path</span>
+          <button onClick={handleCopyPath} className={copyBtn} title="Copy path"><Copy size={11} /></button>
         </div>
-        <p className={`font-mono text-xs break-all ${isDark ? 'text-text-primary' : 'text-gray-700'}`}>{selectedNodeId}</p>
+        <p className={`font-mono text-[11px] break-all leading-relaxed ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>{selectedNodeId}</p>
       </div>
 
-      <div className={`px-3 py-2 border-b flex items-center gap-2 ${border}`}>
-        <span className={`text-xs ${label}`}>TYPE</span>
-        <span className={`flex items-center gap-1 text-xs font-mono ${getTypeColor(selectedNode.type, isDark)}`}>
+      <div className={`px-4 py-2 border-b flex items-center gap-2 ${border}`}>
+        <span className={`text-[10px] font-medium tracking-widest uppercase ${label}`}>Type</span>
+        <span className={`flex items-center gap-1 text-[11px] font-mono ${getTypeColor(selectedNode.type, isDark)}`}>
           {getTypeIcon(selectedNode.type)}
           {selectedNode.type}
-          {selectedNode.type === 'object' && ` (${selectedNode.childCount} keys)`}
-          {selectedNode.type === 'array' && ` (${selectedNode.childCount} items)`}
+          {selectedNode.type === 'object' && ` (${selectedNode.childCount})`}
+          {selectedNode.type === 'array' && ` (${selectedNode.childCount})`}
         </span>
       </div>
 
       {isArrayOfObjects && (
-        <div className={`px-3 py-2 border-b ${border}`}>
+        <div className={`px-4 py-2 border-b ${border}`}>
           <button
             onClick={() => setShowTable(true)}
-            className={`flex items-center gap-1.5 text-xs font-mono ${isDark ? 'text-accent-blue hover:text-accent-sky' : 'text-blue-600 hover:text-blue-500'}`}
+            className={`flex items-center gap-1.5 text-[11px] font-mono ${isDark ? 'text-accent-blue hover:text-accent-sky' : 'text-blue-600 hover:text-blue-700'}`}
           >
-            <Table size={12} />
+            <Table size={11} />
             View as Table
           </button>
         </div>
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="px-3 py-2 flex items-center justify-between">
-          <span className={`text-xs ${label}`}>VALUE</span>
-          <button onClick={handleCopyValue} className={copyBtn} title="Copy value">
-            <Copy size={12} />
-          </button>
+        <div className="px-4 py-2 flex items-center justify-between">
+          <span className={`text-[10px] font-medium tracking-widest uppercase ${label}`}>Value</span>
+          <button onClick={handleCopyValue} className={copyBtn} title="Copy value"><Copy size={11} /></button>
         </div>
-        <pre className={`flex-1 overflow-auto px-3 pb-3 font-mono text-xs whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-gray-700'}`}>
+        <pre className={`flex-1 overflow-auto px-4 pb-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>
           {valueStr}
         </pre>
       </div>

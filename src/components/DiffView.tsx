@@ -3,20 +3,19 @@ import { useDiff } from '../hooks/useDiff'
 import { DiffInput } from './DiffInput'
 import type { DiffEntry } from '../core/diff-types'
 
-function diffColor(kind: string): string {
-  switch (kind) {
-    case 'added': return 'bg-accent-green/15 text-accent-green'
-    case 'removed': return 'bg-accent-red/15 text-accent-red'
-    case 'modified': return 'bg-accent-yellow/15 text-accent-yellow'
-    default: return 'text-text-secondary'
+function diffColor(kind: string, isDark: boolean): string {
+  if (isDark) {
+    switch (kind) {
+      case 'added': return 'bg-accent-green/10 text-accent-green'
+      case 'removed': return 'bg-accent-red/10 text-accent-red'
+      case 'modified': return 'bg-accent-yellow/10 text-accent-yellow'
+      default: return 'text-text-faint'
+    }
   }
-}
-
-function diffColorLight(kind: string): string {
   switch (kind) {
     case 'added': return 'bg-green-50 text-green-800'
     case 'removed': return 'bg-red-50 text-red-800'
-    case 'modified': return 'bg-yellow-50 text-yellow-800'
+    case 'modified': return 'bg-amber-50 text-amber-800'
     default: return 'text-gray-500'
   }
 }
@@ -24,7 +23,7 @@ function diffColorLight(kind: string): string {
 function diffPrefix(kind: string): string {
   switch (kind) {
     case 'added': return '+'
-    case 'removed': return '-'
+    case 'removed': return '\u2212'
     case 'modified': return '~'
     default: return ' '
   }
@@ -33,23 +32,22 @@ function diffPrefix(kind: string): string {
 function formatEntryValue(entry: DiffEntry): string {
   if (entry.kind === 'added') return JSON.stringify(entry.rightValue)
   if (entry.kind === 'removed') return JSON.stringify(entry.leftValue)
-  if (entry.kind === 'modified') return `${JSON.stringify(entry.leftValue)} → ${JSON.stringify(entry.rightValue)}`
+  if (entry.kind === 'modified') return `${JSON.stringify(entry.leftValue)} \u2192 ${JSON.stringify(entry.rightValue)}`
   return JSON.stringify(entry.leftValue)
 }
 
 function InlineDiffView({ entries, isDark }: { entries: DiffEntry[]; isDark: boolean }) {
   const changedEntries = entries.filter((e) => e.kind !== 'unchanged')
-  const colorFn = isDark ? diffColor : diffColorLight
 
   return (
-    <div className="font-mono text-sm">
+    <div className="font-mono text-[13px]">
       {changedEntries.length === 0 ? (
-        <p className={`p-4 ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>No differences found.</p>
+        <p className={`p-4 text-sm ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>No differences found.</p>
       ) : (
         changedEntries.map((entry, i) => (
-          <div key={i} className={`flex gap-2 px-4 py-1 ${colorFn(entry.kind)}`}>
-            <span className="w-4 flex-shrink-0 text-center">{diffPrefix(entry.kind)}</span>
-            <span className={`min-w-0 ${isDark ? 'text-text-secondary' : 'text-gray-500'}`}>{entry.path}</span>
+          <div key={i} className={`flex gap-2 px-5 py-1 ${diffColor(entry.kind, isDark)}`}>
+            <span className="w-4 flex-shrink-0 text-center opacity-60">{diffPrefix(entry.kind)}</span>
+            <span className="min-w-0 opacity-60">{entry.path}</span>
             <span className="ml-auto flex-shrink-0">{formatEntryValue(entry)}</span>
           </div>
         ))
@@ -60,23 +58,22 @@ function InlineDiffView({ entries, isDark }: { entries: DiffEntry[]; isDark: boo
 
 function SideBySideDiffView({ entries, isDark }: { entries: DiffEntry[]; isDark: boolean }) {
   const changedEntries = entries.filter((e) => e.kind !== 'unchanged')
-  const colorFn = isDark ? diffColor : diffColorLight
   const border = isDark ? 'border-border' : 'border-border-light'
 
   return (
-    <div className="flex font-mono text-sm">
+    <div className="flex font-mono text-[13px]">
       <div className={`flex-1 border-r ${border}`}>
         {changedEntries.length === 0 ? (
-          <p className={`p-4 ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>No differences.</p>
+          <p className={`p-4 ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>No differences.</p>
         ) : (
           changedEntries.map((entry, i) => (
             <div
               key={i}
-              className={`px-4 py-1 ${entry.kind === 'removed' || entry.kind === 'modified' ? colorFn(entry.kind) : (isDark ? 'text-text-faint' : 'text-gray-400')}`}
+              className={`px-5 py-1 ${entry.kind === 'removed' || entry.kind === 'modified' ? diffColor(entry.kind, isDark) : (isDark ? 'text-subtle' : 'text-gray-300')}`}
             >
-              <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{entry.path}: </span>
+              <span className="opacity-50">{entry.path}: </span>
               {entry.kind === 'added' ? (
-                <span className={`italic ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>—</span>
+                <span className="opacity-30">\u2014</span>
               ) : (
                 <span>{JSON.stringify(entry.leftValue)}</span>
               )}
@@ -86,16 +83,16 @@ function SideBySideDiffView({ entries, isDark }: { entries: DiffEntry[]; isDark:
       </div>
       <div className="flex-1">
         {changedEntries.length === 0 ? (
-          <p className={`p-4 ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>No differences.</p>
+          <p className={`p-4 ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>No differences.</p>
         ) : (
           changedEntries.map((entry, i) => (
             <div
               key={i}
-              className={`px-4 py-1 ${entry.kind === 'added' || entry.kind === 'modified' ? colorFn(entry.kind) : (isDark ? 'text-text-faint' : 'text-gray-400')}`}
+              className={`px-5 py-1 ${entry.kind === 'added' || entry.kind === 'modified' ? diffColor(entry.kind, isDark) : (isDark ? 'text-subtle' : 'text-gray-300')}`}
             >
-              <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{entry.path}: </span>
+              <span className="opacity-50">{entry.path}: </span>
               {entry.kind === 'removed' ? (
-                <span className={`italic ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>—</span>
+                <span className="opacity-30">\u2014</span>
               ) : (
                 <span>{JSON.stringify(entry.rightValue)}</span>
               )}
@@ -120,35 +117,28 @@ export function DiffView() {
 
       {diffResult && (
         <>
-          <div className={`flex items-center gap-4 px-4 py-2 border-b ${border}`}>
-            <span className="text-xs font-mono">
-              <span className={isDark ? 'text-accent-green' : 'text-green-700'}>{diffResult.added} added</span>
-              {', '}
-              <span className={isDark ? 'text-accent-red' : 'text-red-700'}>{diffResult.removed} removed</span>
-              {', '}
-              <span className={isDark ? 'text-accent-yellow' : 'text-yellow-700'}>{diffResult.modified} modified</span>
+          <div className={`flex items-center gap-4 px-5 py-2 border-b ${border}`}>
+            <span className="text-[11px] font-mono tracking-wide">
+              <span className="text-accent-green">{diffResult.added} added</span>
+              <span className={isDark ? 'text-subtle' : 'text-gray-300'}>{' \u00b7 '}</span>
+              <span className="text-accent-red">{diffResult.removed} removed</span>
+              <span className={isDark ? 'text-subtle' : 'text-gray-300'}>{' \u00b7 '}</span>
+              <span className="text-accent-yellow">{diffResult.modified} modified</span>
             </span>
-            <div className="ml-auto flex gap-1">
-              <button
-                onClick={() => setDiffViewStyle('inline')}
-                className={`px-2 py-1 text-xs rounded ${
-                  diffViewStyle === 'inline'
-                    ? (isDark ? 'bg-overlay text-text-primary' : 'bg-gray-200 text-gray-800')
-                    : (isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600')
-                }`}
-              >
-                Inline
-              </button>
-              <button
-                onClick={() => setDiffViewStyle('side-by-side')}
-                className={`px-2 py-1 text-xs rounded ${
-                  diffViewStyle === 'side-by-side'
-                    ? (isDark ? 'bg-overlay text-text-primary' : 'bg-gray-200 text-gray-800')
-                    : (isDark ? 'text-text-faint hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600')
-                }`}
-              >
-                Side by Side
-              </button>
+            <div className="ml-auto flex gap-0.5">
+              {(['inline', 'side-by-side'] as const).map((style) => (
+                <button
+                  key={style}
+                  onClick={() => setDiffViewStyle(style)}
+                  className={`px-2 py-0.5 text-[11px] rounded transition-colors ${
+                    diffViewStyle === style
+                      ? isDark ? 'bg-overlay text-text-primary' : 'bg-white text-text-light shadow-sm'
+                      : isDark ? 'text-text-faint hover:text-text-secondary' : 'text-text-light-secondary hover:text-text-light'
+                  }`}
+                >
+                  {style === 'inline' ? 'Inline' : 'Side by Side'}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -164,8 +154,8 @@ export function DiffView() {
 
       {!diffResult && (
         <div className="flex-1 flex items-center justify-center">
-          <p className={`font-mono text-sm ${isDark ? 'text-text-faint' : 'text-gray-400'}`}>
-            Paste JSON in both panels to compare.
+          <p className={`font-mono text-xs tracking-wide ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+            Paste JSON in both panels to compare
           </p>
         </div>
       )}
