@@ -1,8 +1,9 @@
-import { useCallback, useState, useMemo } from 'react'
-import { Copy, Hash, Type, ToggleLeft, CircleSlash, Braces, List, Table } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Hash, Type, ToggleLeft, CircleSlash, Braces, List, Table } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 import { TableView } from './TableView'
+import { CopyButton } from './CopyButton'
 import type { JsonNodeType, ParseResult } from '../core/types'
 
 function getTypeIcon(type: JsonNodeType) {
@@ -79,17 +80,8 @@ export function DetailPanel() {
     )
   }, [isArrayOfObjects, fullValue])
 
-  const handleCopyPath = useCallback(() => {
-    if (selectedNodeId) navigator.clipboard.writeText(selectedNodeId)
-  }, [selectedNodeId])
-
-  const handleCopyValue = useCallback(() => {
-    if (valueStr) navigator.clipboard.writeText(valueStr)
-  }, [valueStr])
-
   const border = isDark ? 'border-border' : 'border-border-light'
   const label = isDark ? 'text-muted' : 'text-text-light-secondary'
-  const copyBtn = isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'
 
   if (!selectedNode) {
     return (
@@ -114,7 +106,7 @@ export function DetailPanel() {
       <div className={`px-4 py-2.5 border-b ${border}`}>
         <div className="flex items-center justify-between mb-1">
           <span className={`text-[10px] font-medium tracking-widest uppercase ${label}`}>Path</span>
-          <button onClick={handleCopyPath} className={copyBtn} title="Copy path"><Copy size={11} /></button>
+          <CopyButton text={selectedNodeId ?? ''} title="Copy path" />
         </div>
         <p className={`font-mono text-[11px] break-all leading-relaxed ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>{selectedNodeId}</p>
       </div>
@@ -144,7 +136,7 @@ export function DetailPanel() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="px-4 py-2 flex items-center justify-between">
           <span className={`text-[10px] font-medium tracking-widest uppercase ${label}`}>Value</span>
-          <button onClick={handleCopyValue} className={copyBtn} title="Copy value"><Copy size={11} /></button>
+          <CopyButton text={valueStr} title="Copy value" />
         </div>
         <pre className={`flex-1 overflow-auto px-4 pb-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>
           {valueStr}

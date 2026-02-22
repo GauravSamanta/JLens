@@ -4,6 +4,7 @@ import { useQueryStore } from '../stores/queryStore'
 import { useUIStore } from '../stores/uiStore'
 import { useJsonPath } from '../hooks/useJsonPath'
 import { JsonInput } from './JsonInput'
+import { CopyButton } from './CopyButton'
 
 export function QueryPanel() {
   const { expression, setExpression, results, error, history, clearHistory } = useQueryStore()
@@ -97,9 +98,12 @@ export function QueryPanel() {
         )}
         {results !== null && !error && (
           <div>
-            <p className={`text-[10px] font-medium tracking-widest uppercase mb-3 ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
-              {Array.isArray(results) ? `${results.length} results` : '1 result'}
-            </p>
+            <div className="flex items-center justify-between mb-3">
+              <p className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+                {Array.isArray(results) ? `${results.length} results` : '1 result'}
+              </p>
+              <CopyButton text={JSON.stringify(results, null, 2)} size={13} title="Copy results" />
+            </div>
             <pre className={`font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>
               {JSON.stringify(results, null, 2)}
             </pre>

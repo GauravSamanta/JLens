@@ -1,6 +1,7 @@
-import { memo, useCallback } from 'react'
-import { ChevronRight, ChevronDown, Copy } from 'lucide-react'
+import { memo } from 'react'
+import { ChevronRight, ChevronDown } from 'lucide-react'
 import { useUIStore } from '../stores/uiStore'
+import { CopyButton } from './CopyButton'
 import type { JsonNode } from '../core/types'
 
 interface TreeNodeProps {
@@ -39,11 +40,6 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
   const isDark = useUIStore((s) => s.theme) === 'dark'
   const isContainer = node.type === 'object' || node.type === 'array'
   const indent = node.depth * 18
-
-  const handleCopy = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    navigator.clipboard.writeText(node.id)
-  }, [node.id])
 
   let rowBg: string
   if (isActiveMatch) rowBg = isDark ? 'bg-accent-yellow/15 ring-1 ring-inset ring-accent-yellow/25' : 'bg-yellow-100 ring-1 ring-inset ring-yellow-300/50'
@@ -90,13 +86,9 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
         <span className={`truncate ${valueColor(node.type, isDark)}`}>{formatValue(node)}</span>
       )}
 
-      <button
-        onClick={handleCopy}
-        className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-100 ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-300 hover:text-gray-500'}`}
-        title={node.id}
-      >
-        <Copy size={11} />
-      </button>
+      <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex-shrink-0">
+        <CopyButton text={node.id} title={node.id} />
+      </span>
     </div>
   )
 })
