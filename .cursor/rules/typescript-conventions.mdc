@@ -1,0 +1,58 @@
+---
+description: TypeScript strictness and type safety conventions
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript Conventions
+
+## Exhaustive Switches with assertNever
+
+Every switch over a union type must have a default case with `assertNever` for compile-time safety:
+
+```typescript
+import { assertNever } from '../core/types'
+
+function getTypeColor(type: JsonNodeType): string {
+  switch (type) {
+    case 'string':  return 'text-accent-green'
+    case 'number':  return 'text-accent-blue'
+    case 'boolean': return 'text-accent-peach'
+    case 'null':    return 'text-text-faint'
+    case 'object':  return 'text-accent-mauve'
+    case 'array':   return 'text-accent-yellow'
+    default:        return assertNever(type)
+  }
+}
+```
+
+## Use `satisfies` for Config Objects
+
+Validate config objects while keeping literal types:
+
+```typescript
+const typeLabels = {
+  string: 'String',
+  number: 'Number',
+} satisfies Record<JsonNodeType, string>
+```
+
+## Avoid Non-Null Assertions
+
+Use proper null checks instead of `!`:
+
+```typescript
+// ❌ BAD
+const node = parseResult!.nodes.get(id)!
+
+// ✅ GOOD
+const node = parseResult?.nodes.get(id)
+if (!node) return
+```
+
+## Type Definitions
+
+- Define types in `src/core/types.ts` for shared types.
+- Don't duplicate type definitions across files.
+- Prefer interfaces over type aliases for object shapes.
+- Use discriminated unions for state variants.

@@ -1,0 +1,38 @@
+---
+description: Accessibility requirements for JLens UI components
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# Accessibility
+
+## Tree View (W3C TreeView Pattern)
+
+Tree components must follow the WAI-ARIA TreeView pattern:
+
+- Container: `role="tree"` with `aria-label`
+- Each row: `role="treeitem"` with `aria-level`, `aria-posinset`, `aria-setsize`
+- Container nodes: `aria-expanded="true"` or `"false"`
+- Selected node: `aria-selected="true"`
+- Nested groups: `role="group"`
+
+Keyboard navigation (roving tabindex):
+- `↑`/`↓`: Navigate between visible nodes
+- `←`: Collapse current or move to parent
+- `→`: Expand current or move to first child
+- `Home`/`End`: First/last visible node
+- `Enter`: Select focused node
+
+Only one treeitem has `tabindex="0"` at a time; all others get `tabindex="-1"`.
+
+## Color Contrast
+
+All text must meet WCAG AA: 4.5:1 ratio for body text, 3:1 for large text (18px+).
+Don't rely on color alone to convey type — add secondary indicators (quotes, italic, icons).
+
+## Interactive Elements
+
+- All buttons need `aria-label` or visible text
+- Modals need focus trapping and `Escape` to close
+- Visible focus indicators on all interactive elements (`ring-2`)
+- Tables need `aria-sort` on sortable column headers

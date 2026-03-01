@@ -1,0 +1,57 @@
+---
+description: Zustand store patterns — selectors, actions, testing
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Zustand Patterns
+
+## Selectors: Always Use Individual Selectors
+
+Never destructure the entire store — it subscribes to all state and causes unnecessary re-renders.
+
+```typescript
+// ❌ BAD — re-renders on ANY store change
+const { parseResult, expandedNodes, toggleNode } = useJsonStore()
+
+// ✅ GOOD — re-renders only when specific values change
+const parseResult = useJsonStore((s) => s.parseResult)
+const expandedNodes = useJsonStore((s) => s.expandedNodes)
+const toggleNode = useJsonStore((s) => s.toggleNode)
+```
+
+Actions (functions) are stable references in Zustand 5 and never trigger re-renders.
+
+## Multi-Value Selectors: Use useShallow
+
+When you need multiple state values together, use `useShallow` to avoid re-renders from new object references:
+
+```typescript
+import { useShallow } from 'zustand/react/shallow'
+
+const { matchIds, activeMatchIndex } = useSearchStore(
+  useShallow((s) => ({ matchIds: s.matchIds, activeMatchIndex: s.activeMatchIndex }))
+)
+```
+
+## Batch State Updates
+
+Never call state-mutating actions in a loop. Add batch actions instead:
+
+```typescript
+// ❌ BAD — N state updates, N re-renders
+matches.forEach((id) => expandToNode(id))
+
+// ✅ GOOD — single state update
+expandNodes(matches)
+```
+
+## Testing Stores
+
+Use `getInitialState()` for clean resets in tests:
+
+```typescript
+afterEach(() => {
+  useJsonStore.setState(useJsonStore.getInitialState(), true)
+})
+```

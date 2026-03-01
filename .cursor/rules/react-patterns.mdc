@@ -1,0 +1,39 @@
+---
+description: React 19 component patterns and performance
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React 19 Patterns
+
+## Don't Add Manual Memoization
+
+React Compiler auto-memoizes components and derived values. Don't add new `useMemo`, `useCallback`, or `memo()` wrappers. Existing ones are fine to leave until compiler is enabled.
+
+## Use startTransition for Non-Urgent Updates
+
+Wrap expensive renders (search highlighting, match expansion) in `startTransition` to keep the UI responsive:
+
+```typescript
+import { useTransition } from 'react'
+const [, startTransition] = useTransition()
+
+startTransition(() => {
+  setMatchIds(matches)
+})
+```
+
+## Component Structure
+
+- One component per file. Named export matching the filename.
+- Props interfaces defined in the same file, not exported unless shared.
+- Keep components under 150 lines. Extract hooks for complex logic.
+- Use refs for DOM access, not `document.querySelector`.
+
+## Event Handlers
+
+Prefer inline handlers for simple operations. Extract named handlers when logic exceeds 2-3 lines or is reused.
+
+## Imports
+
+Keep all imports at the top of the file. Group: React → third-party → internal (stores, hooks, components, types).

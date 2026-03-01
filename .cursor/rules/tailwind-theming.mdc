@@ -1,0 +1,43 @@
+---
+description: Tailwind CSS 4 and theming conventions
+globs: "**/*.{tsx,css}"
+alwaysApply: false
+---
+
+# Tailwind & Theming
+
+## Theme Colors
+
+Use semantic color tokens from `@theme` in `src/index.css`, not raw Tailwind colors:
+
+```tsx
+// ❌ BAD — raw colors bypass theming
+className="text-gray-400 bg-gray-900"
+
+// ✅ GOOD — semantic tokens
+className="text-text-faint bg-base"
+```
+
+Type accent colors: `accent-green` (string), `accent-blue` (number), `accent-peach` (boolean), `text-text-faint` (null), `accent-mauve` (object), `accent-yellow` (array).
+
+## Dark/Light Mode
+
+The current pattern uses `isDark ? X : Y` ternaries. When refactoring to `@custom-variant dark`, use a single class that auto-resolves:
+
+```tsx
+// Current (acceptable until refactored)
+className={isDark ? 'bg-base text-text-primary' : 'bg-base-light text-text-light'}
+
+// Target (after @custom-variant migration)
+className="bg-base text-text-primary"
+```
+
+## Class Organization
+
+Order utility classes: layout → spacing → typography → colors → effects → modifiers.
+
+Keep component-specific classes inline. Extract to CSS only for complex animations or pseudo-elements.
+
+## New Components
+
+Match existing visual patterns: `text-[11px] font-mono` for data, `text-[10px] tracking-widest uppercase` for labels, `text-xs` for UI text. Border color: `border-border` (dark) / `border-border-light` (light).

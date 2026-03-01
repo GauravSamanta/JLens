@@ -1,0 +1,43 @@
+---
+description: Performance patterns for large JSON payloads
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Performance
+
+## Virtualization (@tanstack/react-virtual)
+
+Always provide `getItemKey` for stable row identity during expand/collapse:
+
+```typescript
+const virtualizer = useVirtualizer({
+  count: visibleNodeIds.length,
+  getScrollElement: () => parentRef.current,
+  estimateSize: () => 28,
+  overscan: 10,
+  getItemKey: (index) => visibleNodeIds[index],
+})
+```
+
+Use `scrollToIndex` to bring items into view programmatically (search matches, breadcrumb navigation).
+
+## Web Workers
+
+- Payloads >5MB parse in the Web Worker
+- Always add a request ID to prevent stale responses from overwriting newer results
+- Transfer large data as `ArrayBuffer` (zero-copy) instead of structured clone
+- Keep `jsonrepair` fallback in the worker too
+
+## Search at Scale
+
+- Build a pre-lowercased search index during parse (avoid `.toLowerCase()` per search)
+- Only auto-expand ancestors of the active match, not all matches
+- For 50k+ nodes, run search in the Web Worker
+- Wrap result-setting in `startTransition`
+
+## General
+
+- Profile before optimizing — use React DevTools Profiler and `performance.mark/measure`
+- Avoid creating intermediate state updates in loops (batch into single action)
+- Don't add heavy dependencies — bundle budget is 120KB gzipped

@@ -1,0 +1,50 @@
+---
+description: Testing conventions with Vitest
+globs: "**/*.test.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing Conventions
+
+## Structure
+
+Tests mirror source structure under `src/test/`:
+- `src/test/core/` — pure function tests (no React)
+- `src/test/stores/` — Zustand store tests (use `act()`)
+- `src/test/hooks/` — hook tests (use `renderHook`)
+- `src/test/integration.test.ts` — cross-layer workflows
+
+## Store Tests
+
+Reset state before each test using `getInitialState()`:
+
+```typescript
+beforeEach(() => {
+  act(() => {
+    useJsonStore.setState(useJsonStore.getInitialState(), true)
+  })
+})
+```
+
+Mutate state with `act()`:
+
+```typescript
+act(() => useJsonStore.getState().setRawInput('{"a":1}'))
+const state = useJsonStore.getState()
+expect(state.parseResult).not.toBeNull()
+```
+
+## What to Test
+
+- **Core logic:** All functions, edge cases, realistic payloads
+- **Stores:** State transitions, action side effects, error paths
+- **Hooks:** Derived state computation, reactivity to store changes
+- **Integration:** Multi-store workflows (parse → search → match)
+
+Don't test: component rendering/styling, third-party library internals, implementation details.
+
+## Assertions
+
+- Use specific matchers: `toEqual` for deep comparison, `toBe` for identity/primitives
+- Prefer `not.toBeNull()` over `toBeTruthy()` for nullable values
+- Test error paths — invalid input, empty state, boundary conditions

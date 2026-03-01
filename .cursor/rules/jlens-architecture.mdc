@@ -1,0 +1,33 @@
+---
+description: JLens project architecture and conventions
+alwaysApply: true
+---
+
+# JLens Architecture
+
+JLens is a client-side JSON debugger: React 19, TypeScript 5.9, Vite 7, Tailwind 4, Zustand 5.
+
+## Layer Separation
+
+```
+src/core/     Pure logic (parser, search, diff, share, repair) — zero React imports
+src/stores/   Zustand stores — state + actions, no UI logic
+src/hooks/    React hooks bridging stores ↔ components
+src/components/ UI components — read from stores via hooks/selectors
+src/workers/  Web Worker for heavy operations (>5MB payloads)
+```
+
+- Core modules must never import React, Zustand, or any UI library.
+- Stores must never import components or hooks.
+- New features go through: types → core logic → store integration → hook (if needed) → component.
+
+## Key Data Structure
+
+JSON is parsed into a flat `Map<string, JsonNode>` (not a nested tree). Paths are node IDs: `$`, `$.users`, `$.users[0].name`. Every node has `parentId` and `childIds` for traversal.
+
+## Principles
+
+- YAGNI — only build what's specified. No "nice to have" additions.
+- Bundle budget: keep gzipped build under 120KB. Avoid heavy dependencies.
+- All processing is client-side. No backend, no API calls (until v2.0).
+- Test with Vitest: core logic gets unit tests, stores get integration tests.
