@@ -54,11 +54,16 @@ export function diffJson(left: unknown, right: unknown): DiffResult {
 
   walk(left, right, '$')
 
-  return {
-    entries,
-    added: entries.filter((e) => e.kind === 'added').length,
-    removed: entries.filter((e) => e.kind === 'removed').length,
-    modified: entries.filter((e) => e.kind === 'modified').length,
-    unchanged: entries.filter((e) => e.kind === 'unchanged').length,
+  let added = 0, removed = 0, modified = 0, unchanged = 0
+  for (const e of entries) {
+    switch (e.kind) {
+      case 'added': added++; break
+      case 'removed': removed++; break
+      case 'modified': modified++; break
+      case 'unchanged': unchanged++; break
+      default: { const _exhaustive: never = e.kind; return _exhaustive }
+    }
   }
+
+  return { entries, added, removed, modified, unchanged }
 }

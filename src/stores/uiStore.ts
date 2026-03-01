@@ -18,6 +18,10 @@ interface UIState {
   showShortcuts: boolean
   setShowShortcuts: (show: boolean) => void
   toggleShortcuts: () => void
+  editorHeight: number
+  setEditorHeight: (height: number) => void
+  editorCollapsed: boolean
+  setEditorCollapsed: (collapsed: boolean) => void
 }
 
 function getInitialTheme(): Theme {
@@ -51,4 +55,8 @@ export const useUIStore = create<UIState>((set) => ({
   showShortcuts: false,
   setShowShortcuts: (show) => set({ showShortcuts: show }),
   toggleShortcuts: () => set((s) => ({ showShortcuts: !s.showShortcuts })),
+  editorHeight: 250,
+  setEditorHeight: (height) => set({ editorHeight: height }),
+  editorCollapsed: false,
+  setEditorCollapsed: (collapsed) => set({ editorCollapsed: collapsed }),
 }))

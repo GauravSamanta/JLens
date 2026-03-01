@@ -1,4 +1,5 @@
-import { ChevronsDown, ChevronsUp } from 'lucide-react'
+import ChevronsDown from 'lucide-react/dist/esm/icons/chevrons-down'
+import ChevronsUp from 'lucide-react/dist/esm/icons/chevrons-up'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 import { Breadcrumbs } from './Breadcrumbs'

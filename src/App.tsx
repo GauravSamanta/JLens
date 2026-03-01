@@ -5,6 +5,7 @@ import { TreeView } from './components/TreeView'
 import { DetailPanel } from './components/DetailPanel'
 import { SearchBar } from './components/SearchBar'
 import { TreeToolbar } from './components/TreeToolbar'
+import { ResizeDivider } from './components/ResizeDivider'
 import { QueryPanel } from './components/QueryPanel'
 import { DiffView } from './components/DiffView'
 import { ShortcutsModal } from './components/ShortcutsModal'
@@ -23,6 +24,7 @@ function App() {
   const mode = useUIStore((s) => s.mode)
   const parseResult = useJsonStore((s) => s.parseResult)
   const isParsing = useJsonStore((s) => s.isParsing)
+  const editorCollapsed = useUIStore((s) => s.editorCollapsed)
   const isDark = theme === 'dark'
 
   useEffect(() => {
@@ -76,6 +78,7 @@ function App() {
             </main>
           ) : parseResult ? (
             <>
+              {!editorCollapsed && <ResizeDivider />}
               <TreeToolbar />
               <div className="flex flex-1 overflow-hidden">
                 <TreeView />

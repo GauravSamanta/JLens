@@ -1,5 +1,5 @@
 import { useMemo, useRef, useEffect } from 'react'
-import { ChevronRight } from 'lucide-react'
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 import type { ParseResult } from '../core/types'

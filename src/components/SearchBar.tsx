@@ -1,4 +1,7 @@
-import { Search, ChevronUp, ChevronDown, X } from 'lucide-react'
+import Search from 'lucide-react/dist/esm/icons/search'
+import ChevronUp from 'lucide-react/dist/esm/icons/chevron-up'
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
+import X from 'lucide-react/dist/esm/icons/x'
 import { useSearchStore } from '../stores/searchStore'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'

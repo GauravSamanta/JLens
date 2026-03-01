@@ -1,4 +1,9 @@
-import { Sun, Moon, Link2, Minimize2, Maximize2, HelpCircle } from 'lucide-react'
+import Sun from 'lucide-react/dist/esm/icons/sun'
+import Moon from 'lucide-react/dist/esm/icons/moon'
+import Link2 from 'lucide-react/dist/esm/icons/link-2'
+import Minimize2 from 'lucide-react/dist/esm/icons/minimize-2'
+import Maximize2 from 'lucide-react/dist/esm/icons/maximize-2'
+import HelpCircle from 'lucide-react/dist/esm/icons/help-circle'
 import { useUIStore, type AppMode } from '../stores/uiStore'
 import { useShareUrl } from '../hooks/useShareUrl'
 
@@ -7,6 +12,8 @@ const modes: { id: AppMode; label: string }[] = [
   { id: 'diff', label: 'Diff' },
   { id: 'query', label: 'Query' },
 ]
+
+const copiedLabel = <span className="text-accent-green text-[10px] font-medium">Copied</span>
 
 export function Toolbar() {
   const { mode, setMode, theme, toggleTheme, rawViewFormat, toggleRawViewFormat, toggleShortcuts } = useUIStore()
@@ -66,7 +73,7 @@ export function Toolbar() {
             title="Copy share link"
           >
             <Link2 size={14} />
-            {showCopied && <span className="text-accent-green text-[10px] font-medium">Copied</span>}
+            {showCopied && copiedLabel}
           </button>
         )}
         <button

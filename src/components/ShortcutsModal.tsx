@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import X from 'lucide-react/dist/esm/icons/x'
 import { useUIStore, type AppMode } from '../stores/uiStore'
 
 interface Shortcut {

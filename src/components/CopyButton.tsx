@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
-import { Copy, Check } from 'lucide-react'
+import Copy from 'lucide-react/dist/esm/icons/copy'
+import Check from 'lucide-react/dist/esm/icons/check'
 import { useUIStore } from '../stores/uiStore'
 
 interface CopyButtonProps {

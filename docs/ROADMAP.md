@@ -10,19 +10,21 @@
 ```
 src/
 ├── core/           parser, search, diff, share, types (pure logic, no React)
+├── editor/         CodeMirror 6 theme + bidirectional sync (Lezer ↔ JSON paths)
 ├── stores/         Zustand: jsonStore, searchStore, queryStore, uiStore
 ├── hooks/          React hooks bridging stores ↔ components
-├── components/     UI: tree, detail panel, search bar, diff, query, table
+├── components/     UI: tree, editor, detail panel, search bar, diff, query, table
 └── workers/        Web Worker for parsing large payloads
 ```
 
-**Stack:** Vite 7 · React 19 · TypeScript 5.9 · Tailwind 4 · Zustand 5 · @tanstack/react-virtual · jsonpath-plus · lz-string · Vitest
+**Stack:** Vite 7 · React 19 · TypeScript 5.9 · Tailwind 4 · Zustand 5 · CodeMirror 6 · @tanstack/react-virtual · jsonpath-plus · lz-string · Vitest
 
 **Key decisions:**
 - JSON parsed into flat `Map<path, JsonNode>` for fast search and virtualized rendering
 - Payloads >5MB parsed in a Web Worker to keep UI responsive
 - All processing client-side, no backend
-- 156 tests across core, stores, hooks, and integration
+- CodeMirror 6 editor lazy-loaded (code-split) to keep initial bundle small
+- 186 tests across core, stores, hooks, editor, and integration
 
 ---
 
@@ -30,10 +32,11 @@ src/
 
 ```
 v1.0  ████████████████████  Shipped
-v1.1  ░░░░░░░░░░░░░░░░░░░░  Next
-v1.2  ░░░░░░░░░░░░░░░░░░░░  Planned
-v1.3  ░░░░░░░░░░░░░░░░░░░░  Planned
+v1.1  ████████████████████  Shipped
+v1.2  ████████████████████  Shipped
+v1.3  ░░░░░░░░░░░░░░░░░░░░  Next
 v1.4  ░░░░░░░░░░░░░░░░░░░░  Planned
+v1.5  ░░░░░░░░░░░░░░░░░░░░  Planned
 v2.0  ░░░░░░░░░░░░░░░░░░░░  Future
 v3.0  ░░░░░░░░░░░░░░░░░░░░  Long-term
 ```
@@ -69,36 +72,56 @@ v3.0  ░░░░░░░░░░░░░░░░░░░░  Long-term
 - [x] String truncation in tree (60 chars + ellipsis)
 - [x] Loading spinner during large payload parsing
 - [x] 156 tests passing
-- [x] Production build: 79KB gzipped
+- [x] Production build: 79KB gzipped (initial bundle)
 
 ---
 
-## v1.1 — Input & Navigation `NEXT`
+## v1.1 — Input & Navigation `SHIPPED`
 
 _Make the first 10 seconds feel seamless._
 
-- [ ] **Lenient JSON parser** — auto-fix malformed JSON: unquoted keys, single quotes, trailing commas, Python-style (`True`/`False`/`None`), comments. Show "Fixed N issues" banner with option to copy corrected JSON
-- [ ] **Expand/collapse all UI buttons** — visible buttons in tree toolbar (keyboard shortcuts already work)
-- [ ] **Keyboard shortcuts legend** — discoverable shortcut reference (Ctrl+K, Ctrl+E, etc.)
-- [ ] **Breadcrumb path bar** — clickable trail: `$ > data > users > [0] > name`
-- [ ] **Format / minify toggle** — switch between pretty-printed and compact raw view
-- [ ] **Better parse errors** — show line/column of JSON syntax error, highlight the problem
+- [x] **Lenient JSON parser** — auto-fix malformed JSON: unquoted keys, single quotes, trailing commas, Python-style (`True`/`False`/`None`), comments. Show "Fixed N issues" banner with option to copy corrected JSON
+- [x] **Expand/collapse all UI buttons** — visible buttons in tree toolbar (keyboard shortcuts already work)
+- [x] **Keyboard shortcuts legend** — discoverable shortcut reference (Ctrl+K, Ctrl+E, etc.)
+- [x] **Breadcrumb path bar** — clickable trail: `$ > data > users > [0] > name`
+- [x] **Format / minify toggle** — switch between pretty-printed and compact raw view
+- [x] **Better parse errors** — show line/column of JSON syntax error, highlight the problem
+- [x] **Search scroll-to-match** — tree view auto-scrolls to active search match
+- [x] 171 tests passing
+- [x] Production build: 91KB gzipped
 
 ---
 
-## v1.2 — Deeper Analysis `PLANNED`
+## v1.2 — CodeMirror Editor `SHIPPED`
+
+_See and edit JSON in a real code editor._
+
+- [x] **CodeMirror 6 editor** — replaces textarea with syntax-highlighted, line-numbered editor
+- [x] **JSON syntax highlighting** — color-coded keys, strings, numbers, booleans, null (dark + light themes)
+- [x] **Code folding** — fold/unfold objects and arrays in the editor
+- [x] **Bracket matching** — highlights matching `{}` and `[]`
+- [x] **Line wrapping** — long lines wrap instead of scrolling horizontally
+- [x] **Resizable editor** — draggable divider between editor and tree view
+- [x] **Bidirectional sync** — click tree node to scroll editor; click in editor to highlight tree node
+- [x] **Lazy loading** — CodeMirror code-split into separate chunk (95KB gzipped), initial bundle unchanged
+- [x] **Vercel React best practices** — direct icon imports, single-pass iterations, hoisted static JSX
+- [x] 186 tests passing
+- [x] Production build: 92KB initial + 95KB editor (code-split)
+
+---
+
+## v1.3 — Deeper Analysis `NEXT`
 
 _Go beyond browsing — understand the structure._
 
 - [ ] **Structure stats panel** — node count by type, depth distribution, payload size
-- [ ] **Syntax-highlighted raw view** — read-only editor with JSON coloring
 - [ ] **Table column sorting** — click headers to sort
 - [ ] **Table column filtering** — filter rows by value
 - [ ] **Type distribution chart** — visual breakdown of types in the payload
 
 ---
 
-## v1.3 — Query Power `PLANNED`
+## v1.4 — Query Power `PLANNED`
 
 _Make the query tab a real tool._
 
@@ -109,7 +132,7 @@ _Make the query tab a real tool._
 
 ---
 
-## v1.4 — Workflow & Persistence `PLANNED`
+## v1.5 — Workflow & Persistence `PLANNED`
 
 _Remember what I was doing._
 

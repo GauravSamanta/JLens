@@ -1,17 +1,29 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, Eraser, WrapText, ChevronDown, ChevronRight, Wrench, Copy, Check } from 'lucide-react'
+import { useRef, useCallback, useEffect, useState, lazy, Suspense } from 'react'
+import Upload from 'lucide-react/dist/esm/icons/upload'
+import Eraser from 'lucide-react/dist/esm/icons/eraser'
+import WrapText from 'lucide-react/dist/esm/icons/wrap-text'
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
+import Wrench from 'lucide-react/dist/esm/icons/wrench'
+import Copy from 'lucide-react/dist/esm/icons/copy'
+import Check from 'lucide-react/dist/esm/icons/check'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
+import type { JsonEditorHandle } from './JsonEditor'
+
+const JsonEditor = lazy(() => import('./JsonEditor'))
 
 export function JsonInput() {
   const { rawInput, setRawInput, parseError, parseResult } = useJsonStore()
   const repairInfo = useJsonStore((s) => s.repairInfo)
+  const selectedNodeId = useJsonStore((s) => s.selectedNodeId)
   const isDark = useUIStore((s) => s.theme) === 'dark'
-  const [collapsed, setCollapsed] = useState(false)
-  const [localInput, setLocalInput] = useState(rawInput)
+  const editorHeight = useUIStore((s) => s.editorHeight)
+  const collapsed = useUIStore((s) => s.editorCollapsed)
+  const setCollapsed = useUIStore((s) => s.setEditorCollapsed)
   const [copiedFixed, setCopiedFixed] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const editorRef = useRef<JsonEditorHandle>(null)
 
   const handleCopyFixed = useCallback(() => {
     if (!repairInfo?.repairedInput) return
@@ -21,28 +33,18 @@ export function JsonInput() {
     }).catch(() => {})
   }, [repairInfo])
 
-  useEffect(() => {
-    setLocalInput(rawInput)
-  }, [rawInput])
-
-  const handleChange = useCallback((value: string) => {
-    setLocalInput(value)
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    const delay = value.length > 100_000 ? 500 : 100
-    debounceRef.current = setTimeout(() => setRawInput(value), delay)
-  }, [setRawInput])
-
   const handleFormat = useCallback(() => {
+    const source = repairInfo?.repairedInput ?? editorRef.current?.getValue() ?? rawInput
     try {
-      const parsed = JSON.parse(localInput)
+      const parsed = JSON.parse(source)
       const formatted = JSON.stringify(parsed, null, 2)
-      setLocalInput(formatted)
+      editorRef.current?.setValue(formatted)
       setRawInput(formatted)
     } catch { /* ignore if invalid */ }
-  }, [localInput, setRawInput])
+  }, [repairInfo, rawInput, setRawInput])
 
   const handleClear = useCallback(() => {
-    setLocalInput('')
+    editorRef.current?.setValue('')
     setRawInput('')
     setCollapsed(false)
   }, [setRawInput])
@@ -51,7 +53,7 @@ export function JsonInput() {
     const reader = new FileReader()
     reader.onload = (e) => {
       const text = e.target?.result as string
-      setLocalInput(text)
+      editorRef.current?.setValue(text)
       setRawInput(text)
     }
     reader.readAsText(file)
@@ -68,10 +70,10 @@ export function JsonInput() {
   }, [])
 
   useEffect(() => {
-    if (parseResult && !parseError && localInput.trim()) {
-      setCollapsed(true)
+    if (!collapsed && selectedNodeId) {
+      editorRef.current?.scrollToPath(selectedNodeId)
     }
-  }, [parseResult, parseError])
+  }, [selectedNodeId, collapsed])
 
   const btnClass = isDark
     ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
@@ -112,8 +114,12 @@ export function JsonInput() {
   }
 
   return (
-    <div className={`border-b px-5 py-3 ${isDark ? 'border-border' : 'border-border-light'}`}>
-      <div className="flex items-center gap-2 mb-2">
+    <div
+      className={`border-b ${isDark ? 'border-border' : 'border-border-light'}`}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      <div className="flex items-center gap-2 px-5 py-2">
         {parseResult && (
           <button
             onClick={() => setCollapsed(true)}
@@ -123,7 +129,7 @@ export function JsonInput() {
           </button>
         )}
         <span className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
-          Input
+          Editor
         </span>
         <div className="flex items-center gap-0.5 ml-auto">
           {repairInfo?.wasRepaired && (
@@ -162,21 +168,20 @@ export function JsonInput() {
           }}
         />
       </div>
-      <textarea
-        value={localInput}
-        onChange={(e) => handleChange(e.target.value)}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        placeholder="Paste JSON here..."
-        className={`w-full h-36 resize-y rounded-lg border p-3.5 font-mono text-[13px] leading-relaxed focus:outline-none transition-colors duration-150 ${
-          isDark
-            ? 'bg-base border-border text-text-primary placeholder-muted focus:border-accent-blue/40'
-            : 'bg-white border-border-light text-text-light placeholder-text-light-secondary focus:border-blue-400/50'
-        }`}
-        spellCheck={false}
-      />
+      <Suspense fallback={
+        <div className={`flex items-center justify-center font-mono text-xs ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`} style={{ height: `${editorHeight}px` }}>
+          Loading editor…
+        </div>
+      }>
+        <JsonEditor
+          ref={editorRef}
+          initialValue={rawInput}
+          onChange={setRawInput}
+          height={editorHeight}
+        />
+      </Suspense>
       {parseError && (
-        <div className={`mt-1.5 rounded-md p-3 ${isDark ? 'bg-red-950/30 border border-red-900/30' : 'bg-red-50 border border-red-200'}`}>
+        <div className={`mx-5 mb-3 rounded-md p-3 ${isDark ? 'bg-red-950/30 border border-red-900/30' : 'bg-red-50 border border-red-200'}`}>
           <p className={`text-xs font-mono ${isDark ? 'text-accent-red' : 'text-red-600'}`}>
             {parseError.message}
           </p>

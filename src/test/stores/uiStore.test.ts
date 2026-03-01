@@ -102,4 +102,29 @@ describe('uiStore', () => {
       expect(useUIStore.getState().diffViewStyle).toBe('side-by-side')
     })
   })
+
+  describe('editorHeight', () => {
+    it('defaults to 250', () => {
+      expect(useUIStore.getState().editorHeight).toBe(250)
+    })
+
+    it('updates editor height', () => {
+      act(() => useUIStore.getState().setEditorHeight(400))
+      expect(useUIStore.getState().editorHeight).toBe(400)
+    })
+  })
+
+  describe('editorCollapsed', () => {
+    it('defaults to false', () => {
+      expect(useUIStore.getState().editorCollapsed).toBe(false)
+    })
+
+    it('sets editor collapsed state', () => {
+      act(() => useUIStore.getState().setEditorCollapsed(true))
+      expect(useUIStore.getState().editorCollapsed).toBe(true)
+
+      act(() => useUIStore.getState().setEditorCollapsed(false))
+      expect(useUIStore.getState().editorCollapsed).toBe(false)
+    })
+  })
 })

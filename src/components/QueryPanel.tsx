@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { History, Trash2 } from 'lucide-react'
+import History from 'lucide-react/dist/esm/icons/history'
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2'
 import { useQueryStore } from '../stores/queryStore'
 import { useUIStore } from '../stores/uiStore'
 import { useJsonPath } from '../hooks/useJsonPath'

@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { ChevronRight, ChevronDown } from 'lucide-react'
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
 import { useUIStore } from '../stores/uiStore'
 import { CopyButton } from './CopyButton'
 import type { JsonNode, JsonNodeType } from '../core/types'

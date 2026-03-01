@@ -12,7 +12,10 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.2",
+    "@lezer/highlight": "^1.2.3",
     "@tanstack/react-virtual": "^3.13.18",
+    "codemirror": "^6.0.2",
     "jsonpath-plus": "^10.4.0",
     "jsonrepair": "^3.13.2",
     "lucide-react": "^0.575.0",
