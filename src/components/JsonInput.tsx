@@ -7,9 +7,11 @@ import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import Wrench from 'lucide-react/dist/esm/icons/wrench'
 import Copy from 'lucide-react/dist/esm/icons/copy'
 import Check from 'lucide-react/dist/esm/icons/check'
+import Loader from 'lucide-react/dist/esm/icons/loader'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 import type { JsonEditorHandle } from './JsonEditor'
+import type { FormatResponse } from '../workers/format.worker'
 
 const JsonEditor = lazy(() => import('./JsonEditor'))
 
@@ -22,8 +24,10 @@ export function JsonInput() {
   const collapsed = useUIStore((s) => s.editorCollapsed)
   const setCollapsed = useUIStore((s) => s.setEditorCollapsed)
   const [copiedFixed, setCopiedFixed] = useState(false)
+  const [isFormatting, setIsFormatting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const editorRef = useRef<JsonEditorHandle>(null)
+  const formatWorkerRef = useRef<Worker | null>(null)
 
   const handleCopyFixed = useCallback(() => {
     if (!repairInfo?.repairedInput) return
@@ -34,14 +38,37 @@ export function JsonInput() {
   }, [repairInfo])
 
   const handleFormat = useCallback(() => {
+    if (isFormatting) return
     const source = repairInfo?.repairedInput ?? editorRef.current?.getValue() ?? rawInput
-    try {
-      const parsed = JSON.parse(source)
-      const formatted = JSON.stringify(parsed, null, 2)
-      editorRef.current?.setValue(formatted)
-      setRawInput(formatted)
-    } catch { /* ignore if invalid */ }
-  }, [repairInfo, rawInput, setRawInput])
+    if (!source.trim()) return
+
+    const SMALL_THRESHOLD = 100_000
+    if (source.length < SMALL_THRESHOLD) {
+      try {
+        const parsed = JSON.parse(source)
+        const formatted = JSON.stringify(parsed, null, 2)
+        editorRef.current?.setValue(formatted)
+      } catch { /* ignore if invalid */ }
+      return
+    }
+
+    setIsFormatting(true)
+    formatWorkerRef.current?.terminate()
+    const worker = new Worker(
+      new URL('../workers/format.worker.ts', import.meta.url),
+      { type: 'module' }
+    )
+    formatWorkerRef.current = worker
+    worker.onmessage = (e: MessageEvent<FormatResponse>) => {
+      if (e.data.success && e.data.formatted) {
+        editorRef.current?.setValue(e.data.formatted)
+      }
+      setIsFormatting(false)
+      worker.terminate()
+      formatWorkerRef.current = null
+    }
+    worker.postMessage({ jsonString: source })
+  }, [isFormatting, repairInfo, rawInput])
 
   const handleClear = useCallback(() => {
     editorRef.current?.setValue('')
@@ -74,6 +101,12 @@ export function JsonInput() {
       editorRef.current?.scrollToPath(selectedNodeId)
     }
   }, [selectedNodeId, collapsed])
+
+  useEffect(() => {
+    return () => {
+      formatWorkerRef.current?.terminate()
+    }
+  }, [])
 
   const btnClass = isDark
     ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
@@ -144,9 +177,9 @@ export function JsonInput() {
               <span className="hidden sm:inline">{copiedFixed ? 'Copied' : 'Copy Fixed'}</span>
             </button>
           )}
-          <button onClick={handleFormat} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Format">
-            <WrapText size={12} />
-            <span className="hidden sm:inline">Format</span>
+          <button onClick={handleFormat} disabled={isFormatting} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass} ${isFormatting ? 'opacity-50 cursor-wait' : ''}`} title="Format">
+            {isFormatting ? <Loader size={12} className="animate-spin" /> : <WrapText size={12} />}
+            <span className="hidden sm:inline">{isFormatting ? 'Formatting…' : 'Format'}</span>
           </button>
           <button onClick={() => fileInputRef.current?.click()} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Upload">
             <Upload size={12} />

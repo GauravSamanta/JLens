@@ -50,7 +50,7 @@ function tryParse(input: string): {
   return { result: null, error: repair.error, repairInfo: null }
 }
 
-const WORKER_THRESHOLD = 5_000_000
+const WORKER_THRESHOLD = 1_000_000
 let parserWorker: Worker | null = null
 
 function getWorker(): Worker {
