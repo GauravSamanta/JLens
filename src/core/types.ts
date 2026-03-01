@@ -18,3 +18,15 @@ export interface ParseResult {
   totalNodes: number
   maxDepth: number
 }
+
+export interface RepairInfo {
+  wasRepaired: boolean
+  repairedInput: string
+}
+
+export interface ParseErrorInfo {
+  message: string
+  line?: number
+  column?: number
+  context?: string
+}
