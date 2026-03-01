@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useJsonStore } from '../stores/jsonStore'
 import { useSearchStore } from '../stores/searchStore'
@@ -19,6 +19,14 @@ export function TreeView() {
     estimateSize: () => 28,
     overscan: 20,
   })
+
+  useEffect(() => {
+    if (!activeMatchId) return
+    const index = visibleNodeIds.indexOf(activeMatchId)
+    if (index !== -1) {
+      virtualizer.scrollToIndex(index, { align: 'center' })
+    }
+  }, [activeMatchId, visibleNodeIds, virtualizer])
 
   if (!parseResult) return null
 
