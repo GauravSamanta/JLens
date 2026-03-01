@@ -7,6 +7,7 @@ import { SearchBar } from './components/SearchBar'
 import { TreeToolbar } from './components/TreeToolbar'
 import { QueryPanel } from './components/QueryPanel'
 import { DiffView } from './components/DiffView'
+import { ShortcutsModal } from './components/ShortcutsModal'
 import { useUIStore } from './stores/uiStore'
 import { useJsonStore } from './stores/jsonStore'
 import { useShareUrl } from './hooks/useShareUrl'
@@ -42,6 +43,11 @@ function App() {
       if (mod && e.key === 'e' && e.shiftKey) {
         e.preventDefault()
         useJsonStore.getState().collapseAll()
+      }
+
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        useUIStore.getState().toggleShortcuts()
       }
     }
 
@@ -90,6 +96,7 @@ function App() {
       )}
       {mode === 'diff' && <DiffView />}
       {mode === 'query' && <QueryPanel />}
+      <ShortcutsModal />
     </div>
   )
 }

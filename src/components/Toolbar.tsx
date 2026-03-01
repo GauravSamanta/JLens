@@ -1,4 +1,4 @@
-import { Sun, Moon, Link2, Minimize2, Maximize2 } from 'lucide-react'
+import { Sun, Moon, Link2, Minimize2, Maximize2, HelpCircle } from 'lucide-react'
 import { useUIStore, type AppMode } from '../stores/uiStore'
 import { useShareUrl } from '../hooks/useShareUrl'
 
@@ -9,7 +9,7 @@ const modes: { id: AppMode; label: string }[] = [
 ]
 
 export function Toolbar() {
-  const { mode, setMode, theme, toggleTheme, rawViewFormat, toggleRawViewFormat } = useUIStore()
+  const { mode, setMode, theme, toggleTheme, rawViewFormat, toggleRawViewFormat, toggleShortcuts } = useUIStore()
   const { copyShareUrl, canShare, showCopied } = useShareUrl()
   const isDark = theme === 'dark'
 
@@ -79,6 +79,18 @@ export function Toolbar() {
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+        </button>
+        <button
+          onClick={toggleShortcuts}
+          className={`rounded-md p-1.5 transition-all duration-150 ${
+            isDark
+              ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
+              : 'text-text-light-secondary hover:text-text-light hover:bg-surface-light'
+          }`}
+          aria-label="Keyboard shortcuts"
+          title="Keyboard shortcuts (?)"
+        >
+          <HelpCircle size={15} />
         </button>
       </div>
     </header>
