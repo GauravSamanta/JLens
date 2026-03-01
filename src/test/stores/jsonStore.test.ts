@@ -9,6 +9,7 @@ describe('jsonStore', () => {
         rawInput: '',
         parseResult: null,
         parseError: null,
+        repairInfo: null,
         isParsing: false,
         expandedNodes: new Set(['$']),
         selectedNodeId: null,
@@ -31,11 +32,12 @@ describe('jsonStore', () => {
     })
 
     it('sets parseError for invalid JSON', () => {
-      act(() => useJsonStore.getState().setRawInput('{invalid}'))
+      act(() => useJsonStore.getState().setRawInput('totally broken {{{}}}'))
 
       const state = useJsonStore.getState()
       expect(state.parseResult).toBeNull()
-      expect(state.parseError).toBeTruthy()
+      expect(state.parseError).not.toBeNull()
+      expect(state.parseError!.message).toBeTruthy()
     })
 
     it('clears everything on empty input', () => {
@@ -88,6 +90,35 @@ describe('jsonStore', () => {
 
       const state = useJsonStore.getState()
       expect(state.parseResult!.nodes.get('$.users[0].name')!.value).toBe('Alice')
+    })
+  })
+
+  describe('lenient parsing', () => {
+    it('repairs malformed JSON and sets repairInfo', () => {
+      act(() => useJsonStore.getState().setRawInput('{a: 1, b: 2,}'))
+
+      const state = useJsonStore.getState()
+      expect(state.parseResult).not.toBeNull()
+      expect(state.parseError).toBeNull()
+      expect(state.repairInfo).not.toBeNull()
+      expect(state.repairInfo!.wasRepaired).toBe(true)
+    })
+
+    it('does not set repairInfo for valid JSON', () => {
+      act(() => useJsonStore.getState().setRawInput('{"a": 1}'))
+
+      const state = useJsonStore.getState()
+      expect(state.parseResult).not.toBeNull()
+      expect(state.repairInfo).toBeNull()
+    })
+
+    it('sets rich parseError for truly broken JSON', () => {
+      act(() => useJsonStore.getState().setRawInput('totally not json {{{}}}'))
+
+      const state = useJsonStore.getState()
+      expect(state.parseResult).toBeNull()
+      expect(state.parseError).not.toBeNull()
+      expect(state.parseError!.message).toBeTruthy()
     })
   })
 
@@ -189,12 +220,12 @@ describe('jsonStore', () => {
     })
 
     it('handles invalid left input gracefully', () => {
-      act(() => useJsonStore.getState().setRawInputLeft('{bad}'))
+      act(() => useJsonStore.getState().setRawInputLeft('totally broken {{{}}}'))
       expect(useJsonStore.getState().parseResultLeft).toBeNull()
     })
 
     it('handles invalid right input gracefully', () => {
-      act(() => useJsonStore.getState().setRawInputRight('{bad}'))
+      act(() => useJsonStore.getState().setRawInputRight('totally broken {{{}}}'))
       expect(useJsonStore.getState().parseResultRight).toBeNull()
     })
   })

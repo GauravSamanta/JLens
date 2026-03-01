@@ -1,12 +1,14 @@
 import { create } from 'zustand'
-import type { ParseResult, JsonNode } from '../core/types'
+import type { ParseResult, JsonNode, RepairInfo, ParseErrorInfo } from '../core/types'
 import { parseJson } from '../core/parser'
+import { tryParseWithRepair } from '../core/repair'
 import type { WorkerResponse } from '../workers/parser.worker'
 
 interface JsonState {
   rawInput: string
   parseResult: ParseResult | null
-  parseError: string | null
+  parseError: ParseErrorInfo | null
+  repairInfo: RepairInfo | null
   isParsing: boolean
   expandedNodes: Set<string>
   selectedNodeId: string | null
@@ -28,14 +30,24 @@ interface JsonState {
   expandToNode: (nodeId: string) => void
 }
 
-function tryParse(input: string): { result: ParseResult | null; error: string | null } {
-  if (!input.trim()) return { result: null, error: null }
-  try {
-    const data = JSON.parse(input)
-    return { result: parseJson(data), error: null }
-  } catch (e) {
-    return { result: null, error: (e as Error).message }
+function tryParse(input: string): {
+  result: ParseResult | null
+  error: ParseErrorInfo | null
+  repairInfo: RepairInfo | null
+} {
+  if (!input.trim()) return { result: null, error: null, repairInfo: null }
+
+  const repair = tryParseWithRepair(input)
+
+  if (repair.data !== null) {
+    const result = parseJson(repair.data)
+    const repairInfo = repair.wasRepaired && repair.repairedInput
+      ? { wasRepaired: true, repairedInput: repair.repairedInput }
+      : null
+    return { result, error: null, repairInfo }
   }
+
+  return { result: null, error: repair.error, repairInfo: null }
 }
 
 const WORKER_THRESHOLD = 5_000_000
@@ -55,6 +67,7 @@ export const useJsonStore = create<JsonState>((set, get) => ({
   rawInput: '',
   parseResult: null,
   parseError: null,
+  repairInfo: null,
   isParsing: false,
   expandedNodes: new Set<string>(['$']),
   selectedNodeId: null,
@@ -70,6 +83,7 @@ export const useJsonStore = create<JsonState>((set, get) => ({
         rawInput: '',
         parseResult: null,
         parseError: null,
+        repairInfo: null,
         isParsing: false,
         expandedNodes: new Set(['$']),
         selectedNodeId: null,
@@ -78,11 +92,12 @@ export const useJsonStore = create<JsonState>((set, get) => ({
     }
 
     if (input.length < WORKER_THRESHOLD) {
-      const { result, error } = tryParse(input)
+      const { result, error, repairInfo } = tryParse(input)
       set({
         rawInput: input,
         parseResult: result,
         parseError: error,
+        repairInfo,
         isParsing: false,
         expandedNodes: new Set(['$']),
         selectedNodeId: null,
