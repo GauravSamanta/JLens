@@ -1,10 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, Eraser, WrapText, ChevronDown, ChevronRight } from 'lucide-react'
+import { Upload, Eraser, WrapText, ChevronDown, ChevronRight, Wrench } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 
 export function JsonInput() {
   const { rawInput, setRawInput, parseError, parseResult } = useJsonStore()
+  const repairInfo = useJsonStore((s) => s.repairInfo)
   const isDark = useUIStore((s) => s.theme) === 'dark'
   const [collapsed, setCollapsed] = useState(false)
   const [localInput, setLocalInput] = useState(rawInput)
@@ -79,6 +80,12 @@ export function JsonInput() {
           <span className={isDark ? 'text-subtle' : 'text-text-light-secondary'}>·</span>
           <span className="tracking-wide">depth {parseResult.maxDepth}</span>
         </button>
+        {repairInfo?.wasRepaired && (
+          <span className={`flex items-center gap-1 ${isDark ? 'text-accent-yellow' : 'text-amber-600'}`} title="JSON was auto-fixed">
+            <Wrench size={10} />
+            <span className="text-[10px]">Fixed</span>
+          </span>
+        )}
         <button
           onClick={handleClear}
           className={`text-xs ml-auto ${isDark ? 'text-text-faint hover:text-accent-red' : 'text-text-light-secondary hover:text-red-500'}`}
@@ -142,7 +149,16 @@ export function JsonInput() {
         spellCheck={false}
       />
       {parseError && (
-        <p className="mt-1.5 text-xs text-accent-red font-mono">{parseError}</p>
+        <div className={`mt-1.5 rounded-md p-3 ${isDark ? 'bg-red-950/30 border border-red-900/30' : 'bg-red-50 border border-red-200'}`}>
+          <p className={`text-xs font-mono ${isDark ? 'text-accent-red' : 'text-red-600'}`}>
+            {parseError.message}
+          </p>
+          {parseError.context && (
+            <pre className={`mt-2 text-[11px] font-mono leading-relaxed whitespace-pre ${isDark ? 'text-text-faint' : 'text-gray-500'}`}>
+              {parseError.context}
+            </pre>
+          )}
+        </div>
       )}
     </div>
   )
