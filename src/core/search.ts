@@ -1,10 +1,11 @@
 import type { ParseResult } from './types'
 
-export function searchNodes(parseResult: ParseResult, query: string): string[] {
-  if (!query.trim()) return []
+function parseQuery(query: string): { mode: 'all' | 'key' | 'value'; term: string } | null {
+  const trimmed = query.trim()
+  if (!trimmed) return null
 
   let mode: 'all' | 'key' | 'value' = 'all'
-  let searchTerm = query.trim()
+  let searchTerm = trimmed
 
   if (searchTerm.startsWith('key:')) {
     mode = 'key'
@@ -14,19 +15,65 @@ export function searchNodes(parseResult: ParseResult, query: string): string[] {
     searchTerm = searchTerm.slice(6)
   }
 
-  if (!searchTerm) return []
+  if (!searchTerm) return null
+  return { mode, term: searchTerm.toLowerCase() }
+}
 
-  const lower = searchTerm.toLowerCase()
+function isMatch(keyLower: string, valueLower: string, term: string, mode: 'all' | 'key' | 'value'): boolean {
+  switch (mode) {
+    case 'key': return keyLower.includes(term)
+    case 'value': return valueLower.includes(term)
+    case 'all': return keyLower.includes(term) || valueLower.includes(term)
+  }
+}
+
+const CHUNK_SIZE = 5_000
+
+export async function searchNodesAsync(
+  parseResult: ParseResult,
+  query: string,
+  signal: AbortSignal,
+): Promise<string[]> {
+  const parsed = parseQuery(query)
+  if (!parsed) return []
+
+  const { mode, term } = parsed
+  const matches: string[] = []
+  let count = 0
+
+  for (const [id, node] of parseResult.nodes) {
+    if (signal.aborted) return []
+
+    const keyLower = node.key.toLowerCase()
+    const valueLower = node.value !== undefined ? String(node.value).toLowerCase() : ''
+
+    if (isMatch(keyLower, valueLower, term, mode)) {
+      matches.push(id)
+    }
+
+    count++
+    if (count % CHUNK_SIZE === 0) {
+      await new Promise<void>((r) => setTimeout(r, 0))
+    }
+  }
+
+  return signal.aborted ? [] : matches
+}
+
+export function searchNodes(parseResult: ParseResult, query: string): string[] {
+  const parsed = parseQuery(query)
+  if (!parsed) return []
+
+  const { mode, term } = parsed
   const matches: string[] = []
 
   for (const [id, node] of parseResult.nodes) {
-    const keyMatch = node.key.toLowerCase().includes(lower)
-    const valueStr = node.value !== undefined ? String(node.value) : ''
-    const valueMatch = valueStr.toLowerCase().includes(lower)
+    const keyLower = node.key.toLowerCase()
+    const valueLower = node.value !== undefined ? String(node.value).toLowerCase() : ''
 
-    if (mode === 'key' && keyMatch) matches.push(id)
-    else if (mode === 'value' && valueMatch) matches.push(id)
-    else if (mode === 'all' && (keyMatch || valueMatch)) matches.push(id)
+    if (isMatch(keyLower, valueLower, term, mode)) {
+      matches.push(id)
+    }
   }
 
   return matches

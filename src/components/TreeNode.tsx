@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
-import { useUIStore } from '../stores/uiStore'
 import { CopyButton } from './CopyButton'
 import type { JsonNode, JsonNodeType } from '../core/types'
 
@@ -15,14 +14,14 @@ interface TreeNodeProps {
   onSelect: (nodeId: string) => void
 }
 
-function valueColor(type: JsonNodeType, isDark: boolean): string {
+function valueColor(type: JsonNodeType): string {
   switch (type) {
-    case 'string': return isDark ? 'text-accent-green' : 'text-emerald-700'
-    case 'number': return isDark ? 'text-accent-blue' : 'text-blue-700'
-    case 'boolean': return isDark ? 'text-accent-peach' : 'text-orange-700'
-    case 'null': return isDark ? 'text-text-faint italic' : 'text-gray-400 italic'
+    case 'string': return 'text-syntax-string'
+    case 'number': return 'text-accent'
+    case 'boolean': return 'text-syntax-number'
+    case 'null': return 'text-faint italic'
     case 'object':
-    case 'array': return isDark ? 'text-text-secondary' : 'text-gray-500'
+    case 'array': return 'text-sub'
     default: { const _exhaustive: never = type; return _exhaustive }
   }
 }
@@ -40,20 +39,19 @@ function formatValue(node: JsonNode): string {
 }
 
 export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelected, isMatch, isActiveMatch, onToggle, onSelect }: TreeNodeProps) {
-  const isDark = useUIStore((s) => s.theme) === 'dark'
   const isContainer = node.type === 'object' || node.type === 'array'
   const indent = node.depth * 18
 
   let rowBg: string
-  if (isActiveMatch) rowBg = isDark ? 'bg-accent-yellow/15 ring-1 ring-inset ring-accent-yellow/25' : 'bg-yellow-100 ring-1 ring-inset ring-yellow-300/50'
-  else if (isMatch) rowBg = isDark ? 'bg-accent-yellow/8' : 'bg-yellow-50'
-  else if (isSelected) rowBg = isDark ? 'bg-accent-blue/8' : 'bg-blue-50/80'
-  else rowBg = isDark ? 'hover:bg-overlay/25' : 'hover:bg-black/[0.02]'
+  if (isActiveMatch) rowBg = 'bg-syntax-number/15 ring-1 ring-inset ring-syntax-number/25'
+  else if (isMatch) rowBg = 'bg-syntax-number/8'
+  else if (isSelected) rowBg = 'bg-accent/10'
+  else rowBg = 'hover:bg-overlay/25'
 
   return (
     <div
-      className={`flex items-center h-[28px] cursor-pointer group font-mono text-[13px] pr-4 transition-colors duration-75 overflow-hidden whitespace-nowrap ${rowBg}`}
-      style={{ paddingLeft: `${indent + 12}px` }}
+      className={`flex items-center h-[28px] cursor-pointer group font-mono text-[13px] leading-none pr-4 transition-colors duration-75 overflow-hidden whitespace-nowrap ${rowBg}`}
+      style={{ paddingLeft: `${indent + 14}px` }}
       onClick={() => onSelect(node.id)}
     >
       <span className="w-4 flex-shrink-0 flex items-center justify-center">
@@ -63,7 +61,7 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
               e.stopPropagation()
               onToggle(node.id)
             }}
-            className={`transition-colors ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}`}
+            className="transition-colors text-faint hover:text-sub"
           >
             {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           </button>
@@ -72,21 +70,21 @@ export const TreeNodeRow = memo(function TreeNodeRow({ node, isExpanded, isSelec
 
       {node.key !== '$' && (
         <>
-          <span className={isDark ? 'text-text-primary' : 'text-gray-700'}>{node.key}</span>
-          <span className={`mx-1 ${isDark ? 'text-muted' : 'text-gray-300'}`}>:</span>
+          <span className="text-text">{node.key}</span>
+          <span className="mx-1 text-faint">:</span>
         </>
       )}
 
       {isContainer ? (
         isExpanded ? (
-          <span className={isDark ? 'text-subtle' : 'text-gray-400'}>{node.type === 'array' ? '[' : '{'}</span>
+          <span className="text-faint">{node.type === 'array' ? '[' : '{'}</span>
         ) : (
-          <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>
+          <span className="text-faint">
             {node.type === 'array' ? `[${node.childCount}]` : `{${node.childCount}}`}
           </span>
         )
       ) : (
-        <span className={`truncate ${valueColor(node.type, isDark)}`}>{formatValue(node)}</span>
+        <span className={`truncate ${valueColor(node.type)}`}>{formatValue(node)}</span>
       )}
 
       <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex-shrink-0">

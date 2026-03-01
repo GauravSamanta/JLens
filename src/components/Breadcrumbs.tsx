@@ -1,7 +1,6 @@
 import { useMemo, useRef, useEffect } from 'react'
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import { useJsonStore } from '../stores/jsonStore'
-import { useUIStore } from '../stores/uiStore'
 import type { ParseResult } from '../core/types'
 
 function buildBreadcrumbs(nodeId: string, parseResult: ParseResult): { id: string; label: string }[] {
@@ -23,7 +22,6 @@ export function Breadcrumbs() {
   const selectedNodeId = useJsonStore((s) => s.selectedNodeId)
   const selectNode = useJsonStore((s) => s.selectNode)
   const expandToNode = useJsonStore((s) => s.expandToNode)
-  const isDark = useUIStore((s) => s.theme) === 'dark'
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const segments = useMemo(() => {
@@ -54,17 +52,15 @@ export function Breadcrumbs() {
           {i > 0 && (
             <ChevronRight
               size={10}
-              className={isDark ? 'text-subtle' : 'text-gray-300'}
+              className="text-faint"
             />
           )}
           <button
             onClick={() => handleClick(seg.id)}
             className={`font-mono text-[11px] px-1 py-0.5 rounded transition-colors ${
               i === segments.length - 1
-                ? isDark ? 'text-accent-blue' : 'text-blue-600'
-                : isDark
-                  ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
-                  : 'text-text-light-secondary hover:text-text-light hover:bg-gray-100'
+                ? 'text-accent'
+                : 'text-faint hover:text-sub hover:bg-overlay/50'
             }`}
           >
             {seg.label}

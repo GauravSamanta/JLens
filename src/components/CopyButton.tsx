@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import Copy from 'lucide-react/dist/esm/icons/copy'
 import Check from 'lucide-react/dist/esm/icons/check'
-import { useUIStore } from '../stores/uiStore'
 
 interface CopyButtonProps {
   text: string
@@ -12,7 +11,6 @@ interface CopyButtonProps {
 
 export function CopyButton({ text, size = 11, className = '', title }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
-  const isDark = useUIStore((s) => s.theme) === 'dark'
 
   const handleCopy = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
@@ -22,7 +20,7 @@ export function CopyButton({ text, size = 11, className = '', title }: CopyButto
     }).catch(() => {})
   }, [text])
 
-  const defaultClass = isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'
+  const defaultClass = 'text-faint hover:text-sub'
 
   return (
     <button
@@ -31,7 +29,7 @@ export function CopyButton({ text, size = 11, className = '', title }: CopyButto
       title={title ?? 'Copy'}
     >
       {copied ? (
-        <Check size={size} className="text-accent-green" />
+        <Check size={size} className="text-syntax-string" />
       ) : (
         <Copy size={size} />
       )}

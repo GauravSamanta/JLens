@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
-import { ArrowUp, ArrowDown, X } from 'lucide-react'
-import { useUIStore } from '../stores/uiStore'
+import ArrowUp from 'lucide-react/dist/esm/icons/arrow-up'
+import ArrowDown from 'lucide-react/dist/esm/icons/arrow-down'
+import X from 'lucide-react/dist/esm/icons/x'
 
 interface TableViewProps {
   data: Record<string, unknown>[]
@@ -8,7 +9,6 @@ interface TableViewProps {
 }
 
 export function TableView({ data, onClose }: TableViewProps) {
-  const isDark = useUIStore((s) => s.theme) === 'dark'
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
@@ -40,29 +40,25 @@ export function TableView({ data, onClose }: TableViewProps) {
     }
   }
 
-  const border = isDark ? 'border-border' : 'border-border-light'
-
   return (
     <div className="flex flex-col h-full">
-      <div className={`flex items-center justify-between px-4 py-2 border-b ${border}`}>
-        <span className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+        <span className="text-[10px] font-medium tracking-widest uppercase text-faint">
           Table ({data.length} \u00d7 {columns.length})
         </span>
-        <button onClick={onClose} className={isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}>
+        <button onClick={onClose} className="text-faint hover:text-sub">
           <X size={13} />
         </button>
       </div>
       <div className="flex-1 overflow-auto">
         <table className="w-full border-collapse font-mono text-[11px]">
           <thead>
-            <tr className={`border-b ${border}`}>
+            <tr className="border-b border-border">
               {columns.map((col) => (
                 <th
                   key={col}
                   onClick={() => handleSort(col)}
-                  className={`text-left px-3 py-1.5 cursor-pointer select-none whitespace-nowrap ${
-                    isDark ? 'text-text-faint hover:text-text-secondary' : 'text-text-light-secondary hover:text-text-light'
-                  }`}
+                  className="text-left px-3 py-1.5 cursor-pointer select-none whitespace-nowrap text-faint hover:text-sub"
                 >
                   <span className="flex items-center gap-1">
                     {col}
@@ -74,13 +70,13 @@ export function TableView({ data, onClose }: TableViewProps) {
           </thead>
           <tbody>
             {sortedData.map((row, i) => (
-              <tr key={i} className={`border-b ${isDark ? 'border-border/50 hover:bg-overlay/20' : 'border-border-light/50 hover:bg-black/[0.015]'}`}>
+              <tr key={i} className="border-b border-border/50 hover:bg-overlay/20">
                 {columns.map((col) => (
-                  <td key={col} className={`px-3 py-1 whitespace-nowrap max-w-xs truncate ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>
+                  <td key={col} className="px-3 py-1 whitespace-nowrap max-w-xs truncate text-sub">
                     {row[col] === undefined || row[col] === null ? (
-                      <span className={`italic ${isDark ? 'text-subtle' : 'text-gray-300'}`}>\u2014</span>
+                      <span className="italic text-faint">\u2014</span>
                     ) : typeof row[col] === 'object' ? (
-                      <span className={isDark ? 'text-text-faint' : 'text-gray-400'}>{JSON.stringify(row[col])}</span>
+                      <span className="text-faint">{JSON.stringify(row[col])}</span>
                     ) : (
                       String(row[col])
                     )}

@@ -1,19 +1,14 @@
 import { useJsonStore } from '../stores/jsonStore'
-import { useUIStore } from '../stores/uiStore'
 
 export function DiffInput() {
   const { rawInputLeft, rawInputRight, setRawInputLeft, setRawInputRight } = useJsonStore()
-  const isDark = useUIStore((s) => s.theme) === 'dark'
 
-  const border = isDark ? 'border-border' : 'border-border-light'
-  const inputClass = isDark
-    ? 'bg-surface border-border text-text-primary placeholder-text-faint focus:border-accent-blue/40'
-    : 'bg-white border-border-light text-text-light placeholder-text-light-secondary focus:border-blue-400/50'
+  const inputClass = 'bg-surface border-border text-text placeholder-faint focus:border-accent/40'
 
   return (
-    <div className={`flex gap-0 border-b ${border}`}>
-      <div className={`flex-1 p-3 border-r ${border}`}>
-        <span className={`text-[10px] font-medium tracking-widest uppercase mb-1.5 block ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+    <div className="flex gap-0 border-b border-border">
+      <div className="flex-1 p-3 border-r border-border">
+        <span className="text-[10px] font-medium tracking-wider uppercase mb-1.5 block text-faint">
           Original
         </span>
         <textarea
@@ -25,7 +20,7 @@ export function DiffInput() {
         />
       </div>
       <div className="flex-1 p-3">
-        <span className={`text-[10px] font-medium tracking-widest uppercase mb-1.5 block ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+        <span className="text-[10px] font-medium tracking-wider uppercase mb-1.5 block text-faint">
           Modified
         </span>
         <textarea

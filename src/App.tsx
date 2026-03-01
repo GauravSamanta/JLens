@@ -20,12 +20,10 @@ function App() {
     loadFromUrl()
   }, [loadFromUrl])
 
-  const theme = useUIStore((s) => s.theme)
   const mode = useUIStore((s) => s.mode)
   const parseResult = useJsonStore((s) => s.parseResult)
   const isParsing = useJsonStore((s) => s.isParsing)
   const editorCollapsed = useUIStore((s) => s.editorCollapsed)
-  const isDark = theme === 'dark'
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,11 +56,7 @@ function App() {
   }, [])
 
   return (
-    <div className={`h-screen flex flex-col noise-bg ${
-      isDark
-        ? 'bg-base text-text-primary'
-        : 'bg-base-light text-text-light'
-    }`}>
+    <div className="h-screen flex flex-col noise-bg bg-bg text-text">
       <Toolbar />
       {mode === 'explore' && (
         <>
@@ -70,8 +64,8 @@ function App() {
           {isParsing ? (
             <main className="flex-1 flex items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 border-t-transparent animate-spin ${isDark ? 'border-accent-blue' : 'border-blue-500'}`} />
-                <p className={`font-mono text-xs tracking-wide ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+                <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin border-accent" />
+                <p className="font-mono text-xs tracking-wide text-faint">
                   PARSING
                 </p>
               </div>
@@ -89,7 +83,7 @@ function App() {
           ) : (
             <main className="flex-1 flex items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <p className={`font-mono text-[11px] tracking-[0.2em] uppercase ${isDark ? 'text-muted' : 'text-text-light-secondary'}`}>
+                <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-faint">
                   Paste or upload JSON to begin
                 </p>
               </div>

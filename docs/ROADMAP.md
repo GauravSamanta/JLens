@@ -105,8 +105,10 @@ _See and edit JSON in a real code editor._
 - [x] **Bidirectional sync** — click tree node to scroll editor; click in editor to highlight tree node
 - [x] **Lazy loading** — CodeMirror code-split into separate chunk (95KB gzipped), initial bundle unchanged
 - [x] **Vercel React best practices** — direct icon imports, single-pass iterations, hoisted static JSX
+- [x] **Unified theme system** — CSS custom properties for all colors; single CodeMirror theme, no dark/light duplication
+- [x] **Caret color theming** — editor caret switches correctly with dark/light theme
 - [x] 186 tests passing
-- [x] Production build: 92KB initial + 95KB editor (code-split)
+- [x] Production build: 92KB initial + 93KB editor (code-split)
 
 ---
 

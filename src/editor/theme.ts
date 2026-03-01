@@ -6,10 +6,13 @@ const editorTheme = EditorView.theme({
   '&': {
     fontSize: '13px',
     height: '100%',
+    backgroundColor: 'var(--bg)',
+    color: 'var(--text)',
   },
   '.cm-content': {
     fontFamily: 'var(--font-mono)',
     padding: '12px 0',
+    caretColor: 'var(--text)',
   },
   '.cm-scroller': {
     overflow: 'auto',
@@ -17,9 +20,15 @@ const editorTheme = EditorView.theme({
   '&.cm-focused': {
     outline: 'none',
   },
+  '&.cm-editor .cm-cursor, &.cm-editor .cm-dropCursor': {
+    borderLeftColor: 'var(--text)',
+    borderLeftWidth: '2px',
+  },
   '.cm-gutters': {
     border: 'none',
     paddingLeft: '8px',
+    backgroundColor: 'var(--bg)',
+    color: 'var(--faint)',
   },
   '.cm-lineNumbers .cm-gutterElement': {
     padding: '0 8px 0 0',
@@ -29,11 +38,15 @@ const editorTheme = EditorView.theme({
   '.cm-foldGutter .cm-gutterElement': {
     padding: '0 4px',
   },
-  '.cm-activeLine': {
+  '.cm-activeLineGutter': {
     backgroundColor: 'transparent',
+    color: 'var(--sub)',
+  },
+  '.cm-activeLine': {
+    backgroundColor: 'color-mix(in srgb, var(--text) 2%, transparent)',
   },
   '.cm-matchingBracket': {
-    outline: '1px solid var(--color-muted)',
+    outline: '1px solid var(--faint)',
     backgroundColor: 'transparent',
   },
   '.cm-foldPlaceholder': {
@@ -41,93 +54,23 @@ const editorTheme = EditorView.theme({
     fontFamily: 'var(--font-mono)',
     fontSize: '11px',
     padding: '0 4px',
+    backgroundColor: 'var(--overlay)',
+    color: 'var(--faint)',
   },
 })
 
-const darkEditorTheme = EditorView.theme({
-  '&': {
-    backgroundColor: 'var(--color-base)',
-    color: 'var(--color-text-primary)',
-  },
-  '&.cm-focused .cm-cursor': {
-    borderLeftColor: 'var(--color-accent-blue)',
-  },
-  '&.cm-focused .cm-selectionBackground, ::selection': {
-    backgroundColor: 'rgba(122, 162, 247, 0.2)',
-  },
-  '.cm-selectionBackground': {
-    backgroundColor: 'rgba(122, 162, 247, 0.15)',
-  },
-  '.cm-gutters': {
-    backgroundColor: 'var(--color-base)',
-    color: 'var(--color-subtle)',
-  },
-  '.cm-activeLineGutter': {
-    backgroundColor: 'transparent',
-    color: 'var(--color-text-faint)',
-  },
-  '.cm-activeLine': {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-  },
-  '.cm-foldPlaceholder': {
-    backgroundColor: 'var(--color-overlay)',
-    color: 'var(--color-text-faint)',
-  },
-}, { dark: true })
-
-const lightEditorTheme = EditorView.theme({
-  '&': {
-    backgroundColor: 'var(--color-base-light)',
-    color: 'var(--color-text-light)',
-  },
-  '&.cm-focused .cm-cursor': {
-    borderLeftColor: '#3b82f6',
-  },
-  '&.cm-focused .cm-selectionBackground, ::selection': {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-  },
-  '.cm-selectionBackground': {
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
-  },
-  '.cm-gutters': {
-    backgroundColor: 'var(--color-base-light)',
-    color: '#9ca3af',
-  },
-  '.cm-activeLineGutter': {
-    backgroundColor: 'transparent',
-    color: 'var(--color-text-light-secondary)',
-  },
-  '.cm-activeLine': {
-    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-  },
-  '.cm-foldPlaceholder': {
-    backgroundColor: 'var(--color-surface-light)',
-    color: 'var(--color-text-light-secondary)',
-  },
-})
-
-const darkHighlight = HighlightStyle.define([
-  { tag: tags.propertyName, color: 'var(--color-text-primary)' },
-  { tag: tags.string, color: 'var(--color-accent-green)' },
-  { tag: tags.number, color: 'var(--color-accent-blue)' },
-  { tag: tags.bool, color: 'var(--color-accent-peach)' },
-  { tag: tags.null, color: 'var(--color-text-faint)', fontStyle: 'italic' },
-  { tag: tags.punctuation, color: 'var(--color-muted)' },
+const highlight = HighlightStyle.define([
+  { tag: tags.propertyName, color: 'var(--text)' },
+  { tag: tags.string, color: 'var(--syntax-string)' },
+  { tag: tags.number, color: 'var(--accent)' },
+  { tag: tags.bool, color: 'var(--syntax-number)' },
+  { tag: tags.null, color: 'var(--faint)', fontStyle: 'italic' },
+  { tag: tags.punctuation, color: 'var(--faint)' },
 ])
 
-const lightHighlight = HighlightStyle.define([
-  { tag: tags.propertyName, color: 'var(--color-text-light)' },
-  { tag: tags.string, color: '#16a34a' },
-  { tag: tags.number, color: '#2563eb' },
-  { tag: tags.bool, color: '#ea580c' },
-  { tag: tags.null, color: '#9ca3af', fontStyle: 'italic' },
-  { tag: tags.punctuation, color: '#9ca3af' },
-])
-
-export function getEditorExtensions(isDark: boolean) {
+export function getEditorExtensions() {
   return [
     editorTheme,
-    isDark ? darkEditorTheme : lightEditorTheme,
-    syntaxHighlighting(isDark ? darkHighlight : lightHighlight),
+    syntaxHighlighting(highlight),
   ]
 }

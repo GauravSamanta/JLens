@@ -2,7 +2,6 @@ import { useState } from 'react'
 import History from 'lucide-react/dist/esm/icons/history'
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2'
 import { useQueryStore } from '../stores/queryStore'
-import { useUIStore } from '../stores/uiStore'
 import { useJsonPath } from '../hooks/useJsonPath'
 import { JsonInput } from './JsonInput'
 import { CopyButton } from './CopyButton'
@@ -10,10 +9,7 @@ import { CopyButton } from './CopyButton'
 export function QueryPanel() {
   const { expression, setExpression, results, error, history, clearHistory } = useQueryStore()
   const { isLoading } = useJsonPath()
-  const isDark = useUIStore((s) => s.theme) === 'dark'
   const [showHistory, setShowHistory] = useState(false)
-
-  const border = isDark ? 'border-border' : 'border-border-light'
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -25,9 +21,9 @@ export function QueryPanel() {
     <div className="flex-1 flex flex-col overflow-hidden">
       <JsonInput />
 
-      <div className={`border-b px-5 py-2.5 ${border}`}>
+      <div className="border-b px-4 py-2.5 border-border">
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+          <span className="text-[10px] font-medium tracking-wider uppercase text-faint">
             Query
           </span>
           <div className="flex-1 relative">
@@ -38,21 +34,15 @@ export function QueryPanel() {
               onKeyDown={handleKeyDown}
               onFocus={() => history.length > 0 && setShowHistory(true)}
               placeholder="$.store.book[*].author"
-              className={`w-full rounded-lg px-3 py-1.5 font-mono text-[13px] border focus:outline-none transition-colors ${
-                isDark
-                  ? 'bg-surface border-border text-text-primary placeholder-text-faint focus:border-accent-blue/40'
-                  : 'bg-white border-border-light text-text-light placeholder-text-light-secondary focus:border-blue-400/50'
-              }`}
+              className="w-full rounded-lg px-3 py-1.5 font-mono text-[13px] border focus:outline-none transition-colors bg-surface border-border text-text placeholder-faint focus:border-accent/40"
             />
             {showHistory && history.length > 0 && (
-              <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg max-h-48 overflow-auto z-10 ${
-                isDark ? 'bg-surface border-border' : 'bg-white border-border-light shadow-lg'
-              }`}>
-                <div className={`flex items-center justify-between px-3 py-1.5 border-b ${border}`}>
-                  <span className={`text-[10px] tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>History</span>
+              <div className="absolute top-full left-0 right-0 mt-1 border rounded-lg max-h-48 overflow-auto z-10 bg-surface border-border">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
+                  <span className="text-[10px] tracking-wider uppercase text-faint">History</span>
                   <button
                     onClick={() => { clearHistory(); setShowHistory(false) }}
-                    className={isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'}
+                    className="text-faint hover:text-sub"
                     title="Clear history"
                   >
                     <Trash2 size={11} />
@@ -65,11 +55,7 @@ export function QueryPanel() {
                       setExpression(h)
                       setShowHistory(false)
                     }}
-                    className={`w-full text-left px-3 py-1.5 font-mono text-[11px] transition-colors ${
-                      isDark
-                        ? 'text-text-faint hover:bg-overlay/50 hover:text-text-secondary'
-                        : 'text-text-light-secondary hover:bg-black/[0.02] hover:text-text-light'
-                    }`}
+                    className="w-full text-left px-3 py-1.5 font-mono text-[11px] transition-colors text-faint hover:bg-overlay/50 hover:text-sub"
                   >
                     {h}
                   </button>
@@ -79,7 +65,7 @@ export function QueryPanel() {
           </div>
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className={`transition-colors ${isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'} ${showHistory ? (isDark ? 'text-text-secondary' : 'text-text-light') : ''}`}
+            className={`transition-colors text-faint hover:text-sub ${showHistory ? 'text-sub' : ''}`}
             title="Query history"
           >
             <History size={14} />
@@ -87,31 +73,31 @@ export function QueryPanel() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-5">
+      <div className="flex-1 overflow-auto p-4">
         {isLoading && (
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full border border-t-transparent animate-spin ${isDark ? 'border-accent-blue' : 'border-blue-500'}`} />
-            <p className={`font-mono text-xs ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>Evaluating\u2026</p>
+            <div className="w-3 h-3 rounded-full border border-t-transparent animate-spin border-accent" />
+            <p className="font-mono text-xs text-faint">Evaluating…</p>
           </div>
         )}
         {error && (
-          <p className="text-accent-red font-mono text-[13px]">{error}</p>
+          <p className="text-error font-mono text-[13px]">{error}</p>
         )}
         {results !== null && !error && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className={`text-[10px] font-medium tracking-widest uppercase ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+              <p className="text-[10px] font-medium tracking-wider uppercase text-faint">
                 {Array.isArray(results) ? `${results.length} results` : '1 result'}
               </p>
               <CopyButton text={JSON.stringify(results, null, 2)} size={13} title="Copy results" />
             </div>
-            <pre className={`font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-all ${isDark ? 'text-text-secondary' : 'text-text-light'}`}>
+            <pre className="font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-all text-sub">
               {JSON.stringify(results, null, 2)}
             </pre>
           </div>
         )}
         {!results && !error && !isLoading && (
-          <p className={`font-mono text-xs tracking-wide ${isDark ? 'text-text-faint' : 'text-text-light-secondary'}`}>
+          <p className="font-mono text-xs tracking-wide text-faint">
             Enter a JSONPath expression to query the loaded JSON
           </p>
         )}

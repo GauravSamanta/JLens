@@ -1,43 +1,58 @@
 @import "tailwindcss";
 
+:root[data-theme="dark"] {
+  --bg: #161821;
+  --surface: #1e2030;
+  --overlay: #2a2d3d;
+  --text: #c6c8d1;
+  --sub: #7e8aac;
+  --faint: #595e76;
+  --border: #2a2d3d;
+  --accent: #84a0c6;
+  --syntax-string: #b4be82;
+  --syntax-number: #e2a478;
+  --syntax-bool: #a093c7;
+  --error: #e27878;
+}
+
+:root[data-theme="light"] {
+  --bg: #dad3c1;
+  --surface: #c8c3b3;
+  --overlay: #bbb5a5;
+  --text: #1d1b17;
+  --sub: #504a3c;
+  --faint: #918b7d;
+  --border: #b5af9f;
+  --accent: #265280;
+  --syntax-string: #2c5814;
+  --syntax-number: #7d3f00;
+  --syntax-bool: #553896;
+  --error: #8a2838;
+}
+
 @theme {
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
-  /* Dark theme - warm industrial navy */
-  --color-base: #1e1d25;
-  --color-surface: #262430;
-  --color-mantle: #22202b;
-  --color-overlay: #36313d;
-  --color-muted: #706778;
-  --color-subtle: #564f60;
-  --color-text-primary: #d6d0c7;
-  --color-text-secondary: #aaa298;
-  --color-text-faint: #7a7284;
-  --color-border: #332e3a;
-
-  /* Light theme - warm parchment */
-  --color-base-light: #f8f6f1;
-  --color-surface-light: #efece5;
-  --color-text-light: #3b3d50;
-  --color-text-light-secondary: #6c6f85;
-  --color-border-light: #ddd9cf;
-
-  /* Accent colors - warm, restrained, purposeful */
-  --color-accent-blue: #7ca7e4;
-  --color-accent-green: #a3c97a;
-  --color-accent-red: #e87c8a;
-  --color-accent-yellow: #dbb06c;
-  --color-accent-peach: #e8a472;
-  --color-accent-mauve: #b39be0;
-  --color-accent-teal: #79c9b8;
-  --color-accent-sky: #82c4e8;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-overlay: var(--overlay);
+  --color-text: var(--text);
+  --color-sub: var(--sub);
+  --color-faint: var(--faint);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-bool: var(--syntax-bool);
+  --color-error: var(--error);
 }
 
 html, body, #root {
   height: 100%;
   margin: 0;
   font-family: var(--font-sans);
+  caret-color: var(--text);
 }
 
 ::-webkit-scrollbar {
@@ -50,19 +65,19 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-overlay);
+  background: var(--overlay);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted);
+  background: var(--faint);
 }
 
-::selection {
-  background: rgba(122, 162, 247, 0.25);
+*::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: inherit;
 }
 
-/* Subtle noise texture for depth */
 .noise-bg::before {
   content: '';
   position: fixed;

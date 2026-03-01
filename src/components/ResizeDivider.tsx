@@ -2,7 +2,6 @@ import { useCallback, useRef } from 'react'
 import { useUIStore } from '../stores/uiStore'
 
 export function ResizeDivider() {
-  const isDark = useUIStore((s) => s.theme) === 'dark'
   const setEditorHeight = useUIStore((s) => s.setEditorHeight)
   const dragging = useRef(false)
   const startY = useRef(0)
@@ -39,11 +38,7 @@ export function ResizeDivider() {
   return (
     <div
       onPointerDown={handlePointerDown}
-      className={`h-1 cursor-row-resize flex-shrink-0 transition-colors duration-75 ${
-        isDark
-          ? 'bg-border hover:bg-accent-blue/30'
-          : 'bg-border-light hover:bg-blue-300/30'
-      }`}
+      className="h-1 cursor-row-resize flex-shrink-0 transition-colors duration-75 bg-border hover:bg-accent/30"
     />
   )
 }

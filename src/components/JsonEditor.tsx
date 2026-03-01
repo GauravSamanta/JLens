@@ -1,13 +1,12 @@
 import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
-import { EditorView, lineNumbers, drawSelection, highlightActiveLine } from '@codemirror/view'
-import { EditorState, Compartment } from '@codemirror/state'
+import { EditorView, lineNumbers, highlightActiveLine } from '@codemirror/view'
+import { EditorState } from '@codemirror/state'
 import { bracketMatching, foldGutter, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { json } from '@codemirror/lang-json'
 import { getEditorExtensions } from '../editor/theme'
 import { getJsonPathAtPosition } from '../editor/sync'
 import { getPositionForPath } from '../editor/sync'
 import { useJsonStore } from '../stores/jsonStore'
-import { useUIStore } from '../stores/uiStore'
 
 export interface JsonEditorHandle {
   scrollToPath: (path: string) => void
@@ -25,11 +24,9 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
   function JsonEditor({ initialValue, onChange, height }, ref) {
     const containerRef = useRef<HTMLDivElement>(null)
     const viewRef = useRef<EditorView | null>(null)
-    const themeCompartment = useRef(new Compartment())
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
     const syncingFromTree = useRef(false)
-
-    const isDark = useUIStore((s) => s.theme) === 'dark'
+    const editorTriggeredSelection = useRef(false)
 
     const handleDocChange = useCallback((value: string) => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -46,6 +43,7 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
         if (path !== currentSelected) {
           const { parseResult } = useJsonStore.getState()
           if (parseResult?.nodes.has(path)) {
+            editorTriggeredSelection.current = true
             useJsonStore.getState().expandToNode(path)
             useJsonStore.getState().selectNode(path)
           }
@@ -56,20 +54,17 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
     useEffect(() => {
       if (!containerRef.current) return
 
-      const themeExts = getEditorExtensions(isDark)
-
       const view = new EditorView({
         state: EditorState.create({
           doc: initialValue,
           extensions: [
             lineNumbers(),
-            drawSelection(),
             highlightActiveLine(),
             bracketMatching(),
             foldGutter(),
             json(),
             syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-            themeCompartment.current.of(themeExts),
+            ...getEditorExtensions(),
             EditorView.updateListener.of((update) => {
               if (update.docChanged) {
                 handleDocChange(update.state.doc.toString())
@@ -91,16 +86,12 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
       }
     }, [])
 
-    useEffect(() => {
-      const view = viewRef.current
-      if (!view) return
-      view.dispatch({
-        effects: themeCompartment.current.reconfigure(getEditorExtensions(isDark)),
-      })
-    }, [isDark])
-
     useImperativeHandle(ref, () => ({
       scrollToPath(path: string) {
+        if (editorTriggeredSelection.current) {
+          editorTriggeredSelection.current = false
+          return
+        }
         const view = viewRef.current
         if (!view) return
         const range = getPositionForPath(view.state, path)

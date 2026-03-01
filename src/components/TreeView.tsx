@@ -31,12 +31,13 @@ export function TreeView() {
   if (!parseResult) return null
 
   return (
-    <div ref={parentRef} className="flex-1 overflow-auto">
+    <div ref={parentRef} className="flex-1 overflow-auto" style={{ contain: 'strict', overscrollBehavior: 'contain' }}>
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
           width: '100%',
           position: 'relative',
+          contain: 'layout style',
         }}
       >
         {virtualizer.getVirtualItems().map((virtualRow) => {

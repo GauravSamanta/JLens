@@ -24,11 +24,20 @@ interface UIState {
   setEditorCollapsed: (collapsed: boolean) => void
 }
 
+function syncThemeAttribute(theme: Theme): void {
+  document.documentElement.dataset.theme = theme
+}
+
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark'
   const stored = localStorage.getItem('jlens-theme')
-  if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  if (stored === 'light' || stored === 'dark') {
+    syncThemeAttribute(stored)
+    return stored
+  }
+  const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  syncThemeAttribute(preferred)
+  return preferred
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -38,12 +47,14 @@ export const useUIStore = create<UIState>((set) => ({
   setMode: (mode) => set({ mode }),
   setTheme: (theme) => {
     localStorage.setItem('jlens-theme', theme)
+    syncThemeAttribute(theme)
     set({ theme })
   },
   toggleTheme: () =>
     set((state) => {
       const next = state.theme === 'dark' ? 'light' : 'dark'
       localStorage.setItem('jlens-theme', next)
+      syncThemeAttribute(next)
       return { theme: next }
     }),
   rawViewFormat: 'pretty',

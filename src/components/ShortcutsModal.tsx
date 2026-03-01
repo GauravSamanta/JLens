@@ -24,7 +24,7 @@ const modeShortcuts: Record<AppMode, Shortcut[]> = {
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded bg-overlay/60 border border-border text-[10px] font-mono font-medium text-text-secondary">
+    <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded bg-overlay/60 border border-border text-[10px] font-mono font-medium text-sub">
       {children}
     </kbd>
   )
@@ -53,14 +53,14 @@ export function ShortcutsModal() {
       onClick={() => setShowShortcuts(false)}
     >
       <div
-        className="bg-mantle border border-border rounded-xl p-5 w-80 shadow-2xl"
+        className="bg-surface border border-border rounded-xl p-5 w-80 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-text-primary">Keyboard Shortcuts</h2>
+          <h2 className="text-sm font-semibold text-text">Keyboard Shortcuts</h2>
           <button
             onClick={() => setShowShortcuts(false)}
-            className="text-text-faint hover:text-text-secondary p-0.5"
+            className="text-faint hover:text-sub p-0.5"
           >
             <X size={14} />
           </button>
@@ -68,11 +68,11 @@ export function ShortcutsModal() {
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-[10px] font-medium tracking-widest uppercase text-muted mb-2">Global</h3>
+            <h3 className="text-[10px] font-medium tracking-wider uppercase text-faint mb-2">Global</h3>
             <div className="space-y-2">
               {globalShortcuts.map((s) => (
                 <div key={s.description} className="flex items-center justify-between">
-                  <span className="text-xs text-text-secondary">{s.description}</span>
+                  <span className="text-xs text-sub">{s.description}</span>
                   <div className="flex items-center gap-0.5">
                     {s.keys.map((k) => <Kbd key={k}>{k}</Kbd>)}
                   </div>
@@ -83,11 +83,11 @@ export function ShortcutsModal() {
 
           {currentModeShortcuts.length > 0 && (
             <div>
-              <h3 className="text-[10px] font-medium tracking-widest uppercase text-muted mb-2">{modeName}</h3>
+              <h3 className="text-[10px] font-medium tracking-wider uppercase text-faint mb-2">{modeName}</h3>
               <div className="space-y-2">
                 {currentModeShortcuts.map((s) => (
                   <div key={s.description} className="flex items-center justify-between">
-                    <span className="text-xs text-text-secondary">{s.description}</span>
+                    <span className="text-xs text-sub">{s.description}</span>
                     <div className="flex items-center gap-0.5">
                       {s.keys.map((k, i) => <Kbd key={`${k}-${i}`}>{k}</Kbd>)}
                     </div>
