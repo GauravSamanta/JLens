@@ -14,6 +14,7 @@ function getTypeIcon(type: JsonNodeType) {
     case 'null': return <CircleSlash size={12} />
     case 'object': return <Braces size={12} />
     case 'array': return <List size={12} />
+    default: { const _exhaustive: never = type; return _exhaustive }
   }
 }
 
@@ -25,6 +26,7 @@ function getTypeColor(type: JsonNodeType, isDark: boolean): string {
     case 'null': return isDark ? 'text-text-faint' : 'text-gray-400'
     case 'object': return isDark ? 'text-accent-mauve' : 'text-purple-700'
     case 'array': return isDark ? 'text-accent-yellow' : 'text-amber-700'
+    default: { const _exhaustive: never = type; return _exhaustive }
   }
 }
 

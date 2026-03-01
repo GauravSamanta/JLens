@@ -18,7 +18,7 @@ export function JsonInput() {
     navigator.clipboard.writeText(repairInfo.repairedInput).then(() => {
       setCopiedFixed(true)
       setTimeout(() => setCopiedFixed(false), 1500)
-    })
+    }).catch(() => {})
   }, [repairInfo])
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { ChevronRight, ChevronDown } from 'lucide-react'
 import { useUIStore } from '../stores/uiStore'
 import { CopyButton } from './CopyButton'
-import type { JsonNode } from '../core/types'
+import type { JsonNode, JsonNodeType } from '../core/types'
 
 interface TreeNodeProps {
   node: JsonNode
@@ -14,13 +14,15 @@ interface TreeNodeProps {
   onSelect: (nodeId: string) => void
 }
 
-function valueColor(type: string, isDark: boolean): string {
+function valueColor(type: JsonNodeType, isDark: boolean): string {
   switch (type) {
     case 'string': return isDark ? 'text-accent-green' : 'text-emerald-700'
     case 'number': return isDark ? 'text-accent-blue' : 'text-blue-700'
     case 'boolean': return isDark ? 'text-accent-peach' : 'text-orange-700'
     case 'null': return isDark ? 'text-text-faint italic' : 'text-gray-400 italic'
-    default: return isDark ? 'text-text-secondary' : 'text-gray-500'
+    case 'object':
+    case 'array': return isDark ? 'text-text-secondary' : 'text-gray-500'
+    default: { const _exhaustive: never = type; return _exhaustive }
   }
 }
 

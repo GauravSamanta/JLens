@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { JSONPath } from 'jsonpath-plus'
 import { useQueryStore } from '../stores/queryStore'
 import { useJsonStore } from '../stores/jsonStore'
 
@@ -17,17 +18,15 @@ export function useJsonPath() {
     setIsLoading(true)
     try {
       const data = JSON.parse(rawInput)
-      import('jsonpath-plus').then(({ JSONPath }) => {
-        try {
-          const result = JSONPath({ path: expr, json: data })
-          setResults(result)
-          addToHistory(expr)
-        } catch (e) {
-          setError((e as Error).message)
-        } finally {
-          setIsLoading(false)
-        }
-      })
+      try {
+        const result = JSONPath({ path: expr, json: data })
+        setResults(result)
+        addToHistory(expr)
+      } catch (e) {
+        setError((e as Error).message)
+      } finally {
+        setIsLoading(false)
+      }
     } catch {
       setError('Invalid JSON input')
       setIsLoading(false)

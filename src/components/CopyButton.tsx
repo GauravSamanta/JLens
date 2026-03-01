@@ -18,7 +18,7 @@ export function CopyButton({ text, size = 11, className = '', title }: CopyButto
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
-    })
+    }).catch(() => {})
   }, [text])
 
   const defaultClass = isDark ? 'text-subtle hover:text-text-secondary' : 'text-gray-400 hover:text-gray-600'

@@ -1,31 +1,34 @@
 import { useUIStore } from '../stores/uiStore'
 import { useDiff } from '../hooks/useDiff'
 import { DiffInput } from './DiffInput'
-import type { DiffEntry } from '../core/diff-types'
+import type { DiffEntry, DiffKind } from '../core/diff-types'
 
-function diffColor(kind: string, isDark: boolean): string {
+function diffColor(kind: DiffKind, isDark: boolean): string {
   if (isDark) {
     switch (kind) {
       case 'added': return 'bg-accent-green/10 text-accent-green'
       case 'removed': return 'bg-accent-red/10 text-accent-red'
       case 'modified': return 'bg-accent-yellow/10 text-accent-yellow'
-      default: return 'text-text-faint'
+      case 'unchanged': return 'text-text-faint'
+      default: { const _exhaustive: never = kind; return _exhaustive }
     }
   }
   switch (kind) {
     case 'added': return 'bg-green-50 text-green-800'
     case 'removed': return 'bg-red-50 text-red-800'
     case 'modified': return 'bg-amber-50 text-amber-800'
-    default: return 'text-gray-500'
+    case 'unchanged': return 'text-gray-500'
+    default: { const _exhaustive: never = kind; return _exhaustive }
   }
 }
 
-function diffPrefix(kind: string): string {
+function diffPrefix(kind: DiffKind): string {
   switch (kind) {
     case 'added': return '+'
     case 'removed': return '\u2212'
     case 'modified': return '~'
-    default: return ' '
+    case 'unchanged': return ' '
+    default: { const _exhaustive: never = kind; return _exhaustive }
   }
 }
 
