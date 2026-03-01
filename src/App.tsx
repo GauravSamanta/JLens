@@ -29,7 +29,7 @@ function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey
 
-      if (mod && e.key === 'k') {
+      if (mod && (e.key === 'k' || e.key === 'f')) {
         e.preventDefault()
         const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement
         searchInput?.focus()

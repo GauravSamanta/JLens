@@ -8,6 +8,7 @@ interface Shortcut {
 }
 
 const globalShortcuts: Shortcut[] = [
+  { keys: ['Ctrl', 'F'], description: 'Focus search' },
   { keys: ['Ctrl', 'K'], description: 'Focus search' },
   { keys: ['?'], description: 'Toggle shortcuts' },
 ]
