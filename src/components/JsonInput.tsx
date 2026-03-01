@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, Eraser, WrapText, ChevronDown, ChevronRight, Wrench } from 'lucide-react'
+import { Upload, Eraser, WrapText, ChevronDown, ChevronRight, Wrench, Copy, Check } from 'lucide-react'
 import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 
@@ -9,8 +9,17 @@ export function JsonInput() {
   const isDark = useUIStore((s) => s.theme) === 'dark'
   const [collapsed, setCollapsed] = useState(false)
   const [localInput, setLocalInput] = useState(rawInput)
+  const [copiedFixed, setCopiedFixed] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  const handleCopyFixed = useCallback(() => {
+    if (!repairInfo?.repairedInput) return
+    navigator.clipboard.writeText(repairInfo.repairedInput).then(() => {
+      setCopiedFixed(true)
+      setTimeout(() => setCopiedFixed(false), 1500)
+    })
+  }, [repairInfo])
 
   useEffect(() => {
     setLocalInput(rawInput)
@@ -81,10 +90,16 @@ export function JsonInput() {
           <span className="tracking-wide">depth {parseResult.maxDepth}</span>
         </button>
         {repairInfo?.wasRepaired && (
-          <span className={`flex items-center gap-1 ${isDark ? 'text-accent-yellow' : 'text-amber-600'}`} title="JSON was auto-fixed">
-            <Wrench size={10} />
-            <span className="text-[10px]">Fixed</span>
-          </span>
+          <button
+            onClick={handleCopyFixed}
+            className={`flex items-center gap-1 transition-colors ${
+              isDark ? 'text-accent-yellow hover:text-accent-green' : 'text-amber-600 hover:text-emerald-600'
+            }`}
+            title="Copy corrected JSON"
+          >
+            {copiedFixed ? <Check size={10} className="text-accent-green" /> : <Wrench size={10} />}
+            <span className="text-[10px]">{copiedFixed ? 'Copied' : 'Fixed · Copy'}</span>
+          </button>
         )}
         <button
           onClick={handleClear}
@@ -111,6 +126,18 @@ export function JsonInput() {
           Input
         </span>
         <div className="flex items-center gap-0.5 ml-auto">
+          {repairInfo?.wasRepaired && (
+            <button
+              onClick={handleCopyFixed}
+              className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${
+                isDark ? 'text-accent-yellow hover:text-accent-green hover:bg-overlay/50' : 'text-amber-600 hover:text-emerald-600 hover:bg-surface-light'
+              }`}
+              title="Copy corrected JSON"
+            >
+              {copiedFixed ? <Check size={12} className="text-accent-green" /> : <Copy size={12} />}
+              <span className="hidden sm:inline">{copiedFixed ? 'Copied' : 'Copy Fixed'}</span>
+            </button>
+          )}
           <button onClick={handleFormat} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${btnClass}`} title="Format">
             <WrapText size={12} />
             <span className="hidden sm:inline">Format</span>
