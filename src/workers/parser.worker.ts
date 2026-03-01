@@ -1,4 +1,5 @@
 import { parseJson } from '../core/parser'
+import { tryParseWithRepair } from '../core/repair'
 import type { JsonNode } from '../core/types'
 
 export interface WorkerRequest {
@@ -14,13 +15,15 @@ export interface WorkerResponse {
     maxDepth: number
   }
   error?: string
+  wasRepaired?: boolean
+  repairedInput?: string
 }
 
 self.onmessage = (e: MessageEvent<WorkerRequest>) => {
-  try {
-    const data = JSON.parse(e.data.jsonString)
-    const result = parseJson(data)
+  const repair = tryParseWithRepair(e.data.jsonString)
 
+  if (repair.data !== null) {
+    const result = parseJson(repair.data)
     const response: WorkerResponse = {
       success: true,
       result: {
@@ -29,13 +32,14 @@ self.onmessage = (e: MessageEvent<WorkerRequest>) => {
         totalNodes: result.totalNodes,
         maxDepth: result.maxDepth,
       },
+      wasRepaired: repair.wasRepaired,
+      repairedInput: repair.repairedInput ?? undefined,
     }
-
     self.postMessage(response)
-  } catch (err) {
+  } else {
     const response: WorkerResponse = {
       success: false,
-      error: (err as Error).message,
+      error: repair.error?.message ?? 'Parse failed',
     }
     self.postMessage(response)
   }

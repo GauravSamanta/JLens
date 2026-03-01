@@ -110,6 +110,9 @@ export const useJsonStore = create<JsonState>((set, get) => ({
         const response = e.data
         if (response.success && response.result) {
           const nodes = new Map<string, JsonNode>(response.result.nodes)
+          const repairInfo = response.wasRepaired && response.repairedInput
+            ? { wasRepaired: true, repairedInput: response.repairedInput }
+            : null
           set({
             parseResult: {
               nodes,
@@ -118,6 +121,7 @@ export const useJsonStore = create<JsonState>((set, get) => ({
               maxDepth: response.result.maxDepth,
             },
             parseError: null,
+            repairInfo,
             isParsing: false,
             expandedNodes: new Set(['$']),
             selectedNodeId: null,
@@ -125,7 +129,8 @@ export const useJsonStore = create<JsonState>((set, get) => ({
         } else {
           set({
             parseResult: null,
-            parseError: response.error || 'Parse failed',
+            parseError: { message: response.error || 'Parse failed' },
+            repairInfo: null,
             isParsing: false,
           })
         }
