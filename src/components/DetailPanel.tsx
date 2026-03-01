@@ -51,6 +51,7 @@ export function DetailPanel() {
   const parseResult = useJsonStore((s) => s.parseResult)
   const selectedNodeId = useJsonStore((s) => s.selectedNodeId)
   const isDark = useUIStore((s) => s.theme) === 'dark'
+  const rawViewFormat = useUIStore((s) => s.rawViewFormat)
   const [showTable, setShowTable] = useState(false)
 
   const selectedNode = parseResult && selectedNodeId ? parseResult.nodes.get(selectedNodeId) : null
@@ -60,7 +61,9 @@ export function DetailPanel() {
     : null
   const valueStr = selectedNode
     ? selectedNode.type === 'object' || selectedNode.type === 'array'
-      ? JSON.stringify(fullValue, null, 2)
+      ? rawViewFormat === 'pretty'
+        ? JSON.stringify(fullValue, null, 2)
+        : JSON.stringify(fullValue)
       : String(selectedNode.value)
     : ''
 

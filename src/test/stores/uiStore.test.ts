@@ -72,6 +72,20 @@ describe('uiStore', () => {
     })
   })
 
+  describe('rawViewFormat', () => {
+    it('defaults to pretty', () => {
+      expect(useUIStore.getState().rawViewFormat).toBe('pretty')
+    })
+
+    it('toggles between pretty and minified', () => {
+      act(() => useUIStore.getState().toggleRawViewFormat())
+      expect(useUIStore.getState().rawViewFormat).toBe('minified')
+
+      act(() => useUIStore.getState().toggleRawViewFormat())
+      expect(useUIStore.getState().rawViewFormat).toBe('pretty')
+    })
+  })
+
   describe('diffViewStyle', () => {
     it('defaults to side-by-side', () => {
       expect(useUIStore.getState().diffViewStyle).toBe('side-by-side')

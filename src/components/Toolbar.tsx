@@ -1,4 +1,4 @@
-import { Sun, Moon, Link2 } from 'lucide-react'
+import { Sun, Moon, Link2, Minimize2, Maximize2 } from 'lucide-react'
 import { useUIStore, type AppMode } from '../stores/uiStore'
 import { useShareUrl } from '../hooks/useShareUrl'
 
@@ -9,7 +9,7 @@ const modes: { id: AppMode; label: string }[] = [
 ]
 
 export function Toolbar() {
-  const { mode, setMode, theme, toggleTheme } = useUIStore()
+  const { mode, setMode, theme, toggleTheme, rawViewFormat, toggleRawViewFormat } = useUIStore()
   const { copyShareUrl, canShare, showCopied } = useShareUrl()
   const isDark = theme === 'dark'
 
@@ -43,6 +43,18 @@ export function Toolbar() {
         </nav>
       </div>
       <div className="flex items-center gap-1">
+        <button
+          onClick={toggleRawViewFormat}
+          className={`rounded-md p-1.5 transition-all duration-150 ${
+            isDark
+              ? 'text-text-faint hover:text-text-secondary hover:bg-overlay/50'
+              : 'text-text-light-secondary hover:text-text-light hover:bg-surface-light'
+          }`}
+          aria-label={rawViewFormat === 'pretty' ? 'Minify' : 'Pretty print'}
+          title={rawViewFormat === 'pretty' ? 'Minify' : 'Pretty print'}
+        >
+          {rawViewFormat === 'pretty' ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+        </button>
         {canShare && (
           <button
             onClick={copyShareUrl}
