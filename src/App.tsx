@@ -4,6 +4,7 @@ import { JsonInput } from './components/JsonInput'
 import { TreeView } from './components/TreeView'
 import { DetailPanel } from './components/DetailPanel'
 import { SearchBar } from './components/SearchBar'
+import { TreeToolbar } from './components/TreeToolbar'
 import { QueryPanel } from './components/QueryPanel'
 import { DiffView } from './components/DiffView'
 import { useUIStore } from './stores/uiStore'
@@ -69,6 +70,7 @@ function App() {
             </main>
           ) : parseResult ? (
             <>
+              <TreeToolbar />
               <div className="flex flex-1 overflow-hidden">
                 <TreeView />
                 <DetailPanel />
