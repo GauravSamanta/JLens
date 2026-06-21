@@ -19,6 +19,7 @@ const modeShortcuts: Record<AppMode, Shortcut[]> = {
     { keys: ['Ctrl', 'Shift', 'E'], description: 'Collapse all nodes' },
   ],
   diff: [],
+  response: [],
   query: [],
 }
 

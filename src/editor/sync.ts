@@ -4,7 +4,7 @@ import { syntaxTree } from '@codemirror/language'
 
 export function getJsonPathAtPosition(state: EditorState, pos: number): string | null {
   const tree = syntaxTree(state)
-  let node = tree.resolveInner(pos, -1)
+  const node = tree.resolveInner(pos, -1)
 
   if (!node || node.name === 'JsonText') return null
 

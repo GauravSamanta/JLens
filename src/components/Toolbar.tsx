@@ -10,6 +10,7 @@ import { useShareUrl } from '../hooks/useShareUrl'
 const modes: { id: AppMode; label: string }[] = [
   { id: 'explore', label: 'Explore' },
   { id: 'diff', label: 'Diff' },
+  { id: 'response', label: 'Response' },
   { id: 'query', label: 'Query' },
 ]
 
