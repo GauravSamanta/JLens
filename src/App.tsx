@@ -8,6 +8,7 @@ import { TreeToolbar } from './components/TreeToolbar'
 import { ResizeDivider } from './components/ResizeDivider'
 import { QueryPanel } from './components/QueryPanel'
 import { DiffView } from './components/DiffView'
+import { ResponseCompareView } from './components/ResponseCompareView'
 import { ShortcutsModal } from './components/ShortcutsModal'
 import { useUIStore } from './stores/uiStore'
 import { useJsonStore } from './stores/jsonStore'
@@ -92,6 +93,7 @@ function App() {
         </>
       )}
       {mode === 'diff' && <DiffView />}
+      {mode === 'response' && <ResponseCompareView />}
       {mode === 'query' && <QueryPanel />}
       <ShortcutsModal />
     </div>

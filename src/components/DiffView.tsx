@@ -1,6 +1,7 @@
 import { useUIStore } from '../stores/uiStore'
 import { useDiff } from '../hooks/useDiff'
 import { DiffInput } from './DiffInput'
+import { formatValueWithEpoch } from '../core/epoch'
 import type { DiffEntry, DiffKind } from '../core/diff-types'
 
 function diffColor(kind: DiffKind): string {
@@ -24,10 +25,10 @@ function diffPrefix(kind: DiffKind): string {
 }
 
 function formatEntryValue(entry: DiffEntry): string {
-  if (entry.kind === 'added') return JSON.stringify(entry.rightValue)
-  if (entry.kind === 'removed') return JSON.stringify(entry.leftValue)
-  if (entry.kind === 'modified') return `${JSON.stringify(entry.leftValue)} \u2192 ${JSON.stringify(entry.rightValue)}`
-  return JSON.stringify(entry.leftValue)
+  if (entry.kind === 'added') return formatValueWithEpoch(entry.rightValue)
+  if (entry.kind === 'removed') return formatValueWithEpoch(entry.leftValue)
+  if (entry.kind === 'modified') return `${formatValueWithEpoch(entry.leftValue)} \u2192 ${formatValueWithEpoch(entry.rightValue)}`
+  return formatValueWithEpoch(entry.leftValue)
 }
 
 function InlineDiffView({ entries }: { entries: DiffEntry[] }) {
@@ -68,7 +69,7 @@ function SideBySideDiffView({ entries }: { entries: DiffEntry[] }) {
               {entry.kind === 'added' ? (
                 <span className="opacity-30">\u2014</span>
               ) : (
-                <span>{JSON.stringify(entry.leftValue)}</span>
+                <span>{formatValueWithEpoch(entry.leftValue)}</span>
               )}
             </div>
           ))
@@ -87,7 +88,7 @@ function SideBySideDiffView({ entries }: { entries: DiffEntry[] }) {
               {entry.kind === 'removed' ? (
                 <span className="opacity-30">\u2014</span>
               ) : (
-                <span>{JSON.stringify(entry.rightValue)}</span>
+                <span>{formatValueWithEpoch(entry.rightValue)}</span>
               )}
             </div>
           ))

@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "JLens",
+  "version": "1.0.0",
+  "description": "Format JSON responses and compare two request response structures.",
+  "action": {
+    "default_title": "JLens",
+    "default_popup": "index.html"
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

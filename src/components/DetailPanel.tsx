@@ -10,6 +10,7 @@ import { useJsonStore } from '../stores/jsonStore'
 import { useUIStore } from '../stores/uiStore'
 import { TableView } from './TableView'
 import { CopyButton } from './CopyButton'
+import { formatEpoch } from '../core/epoch'
 import type { JsonNodeType, ParseResult } from '../core/types'
 
 function getTypeIcon(type: JsonNodeType) {
@@ -73,6 +74,7 @@ export function DetailPanel() {
         : JSON.stringify(fullValue)
       : String(selectedNode.value)
     : ''
+  const epoch = selectedNode?.type === 'number' ? formatEpoch(selectedNode.value) : null
 
   const isArrayOfObjects = useMemo(() => {
     if (!selectedNode || !parseResult || selectedNode.type !== 'array' || selectedNode.childCount === 0) return false
@@ -145,6 +147,12 @@ export function DetailPanel() {
           <span className="text-[10px] font-medium tracking-wider uppercase text-faint">Value</span>
           <CopyButton text={valueStr} title="Copy value" />
         </div>
+        {epoch && (
+          <div className="px-4 pb-2 font-mono text-[11px] leading-relaxed text-syntax-string">
+            <div>{epoch.local}</div>
+            <div className="text-faint">{epoch.iso} · epoch {epoch.unit}</div>
+          </div>
+        )}
         <pre className="flex-1 overflow-auto px-4 pb-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-all text-sub">
           {valueStr}
         </pre>

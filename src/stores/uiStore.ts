@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type AppMode = 'explore' | 'diff' | 'query'
+export type AppMode = 'explore' | 'diff' | 'response' | 'query'
 export type DiffViewStyle = 'side-by-side' | 'inline'
 export type RawViewFormat = 'pretty' | 'minified'
 export type Theme = 'dark' | 'light'

@@ -2,6 +2,7 @@ import { memo } from 'react'
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
 import { CopyButton } from './CopyButton'
+import { formatValueWithEpoch } from '../core/epoch'
 import type { JsonNode, JsonNodeType } from '../core/types'
 
 interface TreeNodeProps {
@@ -34,7 +35,7 @@ function formatValue(node: JsonNode): string {
   }
   if (node.type === 'null') return 'null'
   if (node.type === 'boolean') return String(node.value)
-  if (node.type === 'number') return String(node.value)
+  if (node.type === 'number') return formatValueWithEpoch(node.value)
   return ''
 }
 
