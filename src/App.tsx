@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { Toolbar } from './components/Toolbar'
 import { JsonInput } from './components/JsonInput'
 import { TreeView } from './components/TreeView'
@@ -94,6 +95,7 @@ function App() {
       {mode === 'diff' && <DiffView />}
       {mode === 'query' && <QueryPanel />}
       <ShortcutsModal />
+      <Analytics />
     </div>
   )
 }
