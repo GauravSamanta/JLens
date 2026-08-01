@@ -49,5 +49,5 @@ export function useSearch() {
       if (debounceRef.current) clearTimeout(debounceRef.current)
       abortRef.current?.abort()
     }
-  }, [query, parseResult])
+  }, [query, parseResult, setMatchIds])
 }

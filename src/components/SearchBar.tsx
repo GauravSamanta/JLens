@@ -19,11 +19,12 @@ export function SearchBar() {
       expandToNode(nodeId)
       selectNode(nodeId)
     }
-  }, [activeMatchIndex, matchIds])
+  }, [activeMatchIndex, matchIds, expandToNode, selectNode])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      e.shiftKey ? prevMatch() : nextMatch()
+      if (e.shiftKey) prevMatch()
+      else nextMatch()
     }
     if (e.key === 'Escape') {
       clearSearch()

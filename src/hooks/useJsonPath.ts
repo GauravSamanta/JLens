@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { JSONPath } from 'jsonpath-plus'
 import { useQueryStore } from '../stores/queryStore'
 import { useJsonStore } from '../stores/jsonStore'
@@ -9,7 +9,7 @@ export function useJsonPath() {
   const [isLoading, setIsLoading] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const evaluate = (expr: string) => {
+  const evaluate = useCallback((expr: string) => {
     if (!expr.trim() || !rawInput.trim()) {
       setResults(null)
       return
@@ -31,7 +31,7 @@ export function useJsonPath() {
       setError('Invalid JSON input')
       setIsLoading(false)
     }
-  }
+  }, [rawInput, setResults, setError, addToHistory])
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -46,7 +46,7 @@ export function useJsonPath() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [expression, rawInput])
+  }, [expression, rawInput, evaluate, setResults])
 
   return { isLoading, evaluate }
 }

@@ -51,6 +51,17 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
       }
     }, [])
 
+    // The view is created once on mount — rebuilding it when a prop changes would
+    // discard cursor, scroll, and fold state. Route the listeners through refs so
+    // the update listener always invokes the latest callbacks instead of the ones
+    // captured at mount.
+    const handleDocChangeRef = useRef(handleDocChange)
+    const handleCursorActivityRef = useRef(handleCursorActivity)
+    useEffect(() => {
+      handleDocChangeRef.current = handleDocChange
+      handleCursorActivityRef.current = handleCursorActivity
+    }, [handleDocChange, handleCursorActivity])
+
     useEffect(() => {
       if (!containerRef.current) return
 
@@ -67,10 +78,10 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
             ...getEditorExtensions(),
             EditorView.updateListener.of((update) => {
               if (update.docChanged) {
-                handleDocChange(update.state.doc.toString())
+                handleDocChangeRef.current(update.state.doc.toString())
               }
               if (update.selectionSet && !update.docChanged) {
-                handleCursorActivity(update.state)
+                handleCursorActivityRef.current(update.state)
               }
             }),
             EditorView.lineWrapping,
@@ -84,6 +95,9 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(
         view.destroy()
         if (debounceRef.current) clearTimeout(debounceRef.current)
       }
+      // initialValue seeds the document once; later changes arrive through the
+      // imperative setValue handle, not by remounting the editor.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useImperativeHandle(ref, () => ({

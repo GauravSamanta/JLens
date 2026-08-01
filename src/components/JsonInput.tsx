@@ -73,7 +73,7 @@ export function JsonInput() {
     editorRef.current?.setValue('')
     setRawInput('')
     setCollapsed(false)
-  }, [setRawInput])
+  }, [setRawInput, setCollapsed])
 
   const handleFileUpload = useCallback((file: File) => {
     const reader = new FileReader()
